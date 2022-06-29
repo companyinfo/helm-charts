@@ -12,7 +12,6 @@ metadata:
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
-    prometheus: kube-prometheus
   {{- if .Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
@@ -21,7 +20,7 @@ spec:
   jobLabel: {{ .Values.serviceMonitor.jobLabel }}
   {{- end }}
   endpoints:
-    - port: http-metrics
+    - port: http
       path: "/metrics"
       {{- if .Values.serviceMonitor.interval }}
       interval: {{ .Values.serviceMonitor.interval }}
@@ -39,8 +38,12 @@ spec:
       honorLabels: {{ .Values.serviceMonitor.honorLabels }}
       {{- end }}
   namespaceSelector:
+  {{- if .Values.serviceMonitor.namespaceSelector }}
+  {{- include "common.tplvalues.render" (dict "value" .Values.serviceMonitor.namespaceSelector "context" $) | nindent 4 }}
+  {{- else }}
     matchNames:
       - {{ include "common.names.namespace" . | quote }}
+  {{- end }}
   selector:
     matchLabels: {{ include "common.labels.matchLabels" . | nindent 6 }}
       {{- if .Values.serviceMonitor.selector }}
