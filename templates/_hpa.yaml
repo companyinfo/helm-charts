@@ -1,4 +1,5 @@
 {{- define "helmet.hpa" -}}
+{{- if .Values.autoscaling.enabled }}
 apiVersion: {{ include "common.capabilities.hpa.apiVersion" ( dict "context" $ ) }}
 kind: HorizontalPodAutoscaler
 metadata:
@@ -19,4 +20,5 @@ spec:
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics: {{- include "common.tplvalues.render" (dict "value" .Values.autoscaling.metrics "context" $) | nindent 4 }}
+{{- end }}
 {{- end -}}
