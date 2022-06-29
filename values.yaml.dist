@@ -338,12 +338,16 @@ resources:
   ## limits:
   ##    cpu: 100m
   ##    memory: 128Mi
-  limits: {}
+  limits:
+    cpu: 200m
+    memory: 256Mi
   ## Examples:
   ## requests:
   ##    cpu: 100m
   ##    memory: 128Mi
-  requests: {}
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 ## @param lifecycleHooks LifecycleHook to set additional configuration at startup Evaluated as a template
 ##
