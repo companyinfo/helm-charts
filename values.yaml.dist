@@ -366,6 +366,21 @@ autoscaling:
         name: cpu
         targetAverageUtilization: 80
 
+## Configure the ConfigMap resource that allows you to store non-confidential data in key-value pairs.
+## ref: https://kubernetes.io/docs/concepts/configuration/configmap/
+##
+configMap:
+  ## @param configMap.data store data in key-value pairs
+  ##
+  ## e.g:
+  ## data:
+  ##   config.yaml: |
+  ##     mode: production
+  ##   FOO: bar
+  ##   DEBUG: true
+  ##
+  data: {}
+
 ## Configure the ingress resource that allows you to access the
 ## APP installation. Set up the URL
 ## ref: https://kubernetes.io/docs/user-guide/ingress/
@@ -479,7 +494,8 @@ serviceMonitor:
 
   ## @param serviceMonitor.labels Extra labels for the ServiceMonitor
   ##
-  labels: {}
+  labels:
+    prometheus: kube-prometheus
 
   ## @param serviceMonitor.annotations Additional ServiceMonitor annotations (evaluated as a template)
   ##
@@ -517,6 +533,10 @@ serviceMonitor:
   ## ref: https://github.com/bitnami/charts/tree/master/bitnami/prometheus-operator#prometheus-configuration
   ##
   selector: {}
+
+  ## @param serviceMonitor.namespaceSelector is a selector for selecting either all namespaces or a list of namespaces.
+  ##
+  namespaceSelector: {}
 
 ## Service account for APP pods to use.
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
