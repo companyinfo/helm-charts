@@ -56,18 +56,21 @@ image:
   registry: registry.ci.fdmg.org
   repository: GROUP/PROJECT
   tag: latest
+
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
+
   ## Optionally specify an array of imagePullSecrets (secrets must be manually created in the namespace)
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   ## Example:
   ## pullSecrets:
   ##   - myRegistryKeySecretName
   ##
-  pullSecrets: []
+  pullSecrets:
+    - gitlab-registry
 
 ## @param replicaCount Number of APP replicas
 ## Note: ReadWriteMany PVCs are required to scale
@@ -358,17 +361,17 @@ lifecycleHooks: {}
 ## @param autoscaling.enabled Deploy a HorizontalPodAutoscaler object for the APP deployment
 ## @param autoscaling.minReplicas Minimum number of replicas to scale back
 ## @param autoscaling.maxReplicas Maximum number of replicas to scale out
+## @param autoscaling.targetCPU Define the CPU target to trigger the scaling actions (utilization percentage)
+## @param autoscaling.targetMemory Define the memory target to trigger the scaling actions (utilization percentage)
 ## @param autoscaling.metrics [array] Metrics to use when deciding to scale the deployment (evaluated as a template)
 ##
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 3
   maxReplicas: 5
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        targetAverageUtilization: 80
+  targetCPU: 80
+  targetMemory: 80
+  metrics: []
 
 ## Configure the ConfigMap resource that allows you to store non-confidential data in key-value pairs.
 ## ref: https://kubernetes.io/docs/concepts/configuration/configmap/
@@ -407,10 +410,6 @@ ingress:
   ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
   ##
   ingressClassName: ""
-
-  ## @param ingress.hostname Default host for the ingress resource
-  ##
-  hostname: app.local
 
   ## @param ingress.path The Path to APP. You may need to set this to '/*' in order to use this
   ## with ALB ingress controllers.
@@ -494,7 +493,7 @@ serviceMonitor:
 
   ## @param serviceMonitor.namespace Namespace in which Prometheus is running
   ##
-  namespace: monitoring
+  namespace: ""
 
   ## @param serviceMonitor.labels Extra labels for the ServiceMonitor
   ##
