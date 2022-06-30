@@ -1,0 +1,565 @@
+## @section Global parameters
+## Global Docker image parameters
+## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+
+## @param global.imageRegistry Global Docker image registry
+## @param global.imagePullSecrets Global Docker registry secret names as an array
+## @param global.storageClass Global StorageClass for Persistent Volume(s)
+##
+global:
+  imageRegistry: ""
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+  storageClass: ""
+
+## @section Common parameters
+
+## @param kubeVersion Force target Kubernetes version (using Helm capabilities if not set)
+##
+kubeVersion: ""
+
+## @param nameOverride String to partially override helmet.fullname template (will maintain the release name)
+##
+nameOverride: ""
+
+## @param fullnameOverride String to fully override helmet.fullname template
+##
+fullnameOverride: ""
+
+## @param clusterDomain Kubernetes Cluster Domain
+##
+clusterDomain: cluster.local
+
+## @param commonLabels Labels to be added to all deployed resources
+##
+commonLabels: {}
+
+## @param commonAnnotations Annotations to be added to all deployed resources
+##
+commonAnnotations: {}
+
+## @section Helmet parameters
+
+## Helmet (App) image version
+## ref: https://gitlab.ci.fdmg.org/GROUP/PROJECT/container_registry
+## @param image.registry APP image registry
+## @param image.repository APP image repository
+## @param image.tag APP image tag (immutable tags are recommended)
+## @param image.pullPolicy APP image pull policy
+## @param image.pullSecrets APP image pull secrets
+##
+image:
+  registry: registry.ci.fdmg.org
+  repository: GROUP/PROJECT
+  tag: latest
+  ## Specify a imagePullPolicy
+  ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+  ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+  ##
+  pullPolicy: IfNotPresent
+  ## Optionally specify an array of imagePullSecrets (secrets must be manually created in the namespace)
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ## Example:
+  ## pullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  pullSecrets: []
+
+## @param replicaCount Number of APP replicas
+## Note: ReadWriteMany PVCs are required to scale
+##
+replicaCount: 1
+
+## Configure APP pods Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+## @param podSecurityContext.enabled Enabled APP pods' Security Context
+## @param podSecurityContext.fsGroup Set APP pod's Security Context fsGroup
+##
+podSecurityContext:
+  enabled: false
+  fsGroup: 0
+
+## Configure Container Security Context (only main container)
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+## @param containerSecurityContext.enabled Enable APP containers' Security Context
+## @param containerSecurityContext.runAsUser APP containers' Security Context
+## @param containerSecurityContext.runAsNonRoot Set Controller container's Security Context runAsNonRoot
+##
+containerSecurityContext:
+  enabled: false
+  runAsUser: 1001
+  runAsNonRoot: true
+
+## @param hostAliases Add deployment host aliases
+## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+##
+hostAliases: []
+
+## @param podAnnotations Additional pod annotations
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+##
+podAnnotations: {}
+
+## @param podLabels Additional pod labels
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+##
+podLabels: {}
+
+## @param podAffinityPreset Pod affinity preset. Allowed values: soft, hard
+## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+##
+podAffinityPreset: ""
+
+## @param podAntiAffinityPreset Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+##
+podAntiAffinityPreset: soft
+
+## Node affinity preset
+## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+## @param nodeAffinityPreset.type Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+## @param nodeAffinityPreset.key Node label key to match Ignored if `affinity` is set.
+## @param nodeAffinityPreset.values Node label values to match. Ignored if `affinity` is set.
+##
+nodeAffinityPreset:
+  type: ""
+  ## E.g.
+  ## key: "kubernetes.io/e2e-az-name"
+  ##
+  key: ""
+  ## E.g.
+  ## values:
+  ##   - e2e-az1
+  ##   - e2e-az2
+  ##
+  values: []
+
+## @param affinity Affinity for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+## Note: podAffinityPreset, podAntiAffinityPreset, and  nodeAffinityPreset will be ignored when it's set
+##
+affinity: {}
+
+## @param nodeSelector Node labels for pod assignment.
+## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+##
+nodeSelector: {}
+
+## @param tolerations Tolerations for pod assignment.
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+
+## @param topologySpreadConstraints Topology Spread Constraints for pod assignment spread across your cluster among failure-domains. Evaluated as a template
+## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
+##
+topologySpreadConstraints: {}
+
+## @param priorityClassName Priority Class Name
+## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
+##
+priorityClassName: ""
+
+## @param schedulerName Use an alternate scheduler, e.g. "stork".
+## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+##
+schedulerName: ""
+
+## @param terminationGracePeriodSeconds Seconds APP pod needs to terminate gracefully
+## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
+##
+terminationGracePeriodSeconds: ""
+
+## @param updateStrategy.type APP deployment strategy type
+## @param updateStrategy.rollingUpdate APP deployment rolling update configuration parameters
+## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+##
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate: {}
+
+## @param sidecars Add additional sidecar containers to the APP pods
+## Example:
+## sidecars:
+##   - name: your-image-name
+##     image: your-image
+##     imagePullPolicy: Always
+##     ports:
+##       - name: portname
+##         containerPort: 1234
+##
+sidecars: []
+
+## @param initContainers Add additional init containers to the APP pods
+## Example:
+## initContainers:
+##   - name: your-image-name
+##     image: your-image
+##     imagePullPolicy: Always
+##     ports:
+##       - name: portname
+##         containerPort: 1234
+##
+initContainers: []
+
+## @param command Override default container command
+##
+command: []
+
+## @param args Override default container args
+##
+args: []
+
+## @param envVars Extra environment variables to be set on APP container
+## Example:
+## envVars:
+##   - name: FOO
+##     value: "bar"
+##
+envVars: []
+
+## @param envVarsConfigMap ConfigMap with extra environment variables
+##
+envVarsConfigMap: ""
+
+## @param envVarsSecret Secret with extra environment variables
+##
+envVarsSecret: ""
+
+## Configure extra options for startup probe
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param startupProbe.enabled Enable startupProbe
+## @param startupProbe.httpGet.path Request path for startupProbe
+## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+## @param startupProbe.periodSeconds Period seconds for startupProbe
+## @param startupProbe.timeoutSeconds Timeout seconds for startupProbe
+## @param startupProbe.failureThreshold Failure threshold for startupProbe
+## @param startupProbe.successThreshold Success threshold for startupProbe
+##
+startupProbe:
+  enabled: false
+#   httpGet:
+#     path: /
+#     port: http
+#     httpHeaders:
+#       - name: Custom-Header
+#         value: Awesome
+#   grpc:
+#     port: 2379
+#   tcpSocket:
+#     port: http
+#   exec:
+#     command:
+#     - cat
+#     - /tmp/healthy
+  initialDelaySeconds: 600
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
+  successThreshold: 1
+
+## Configure extra options for liveness probe
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param livenessProbe.enabled Enable livenessProbe
+## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+## @param livenessProbe.periodSeconds Period seconds for livenessProbe
+## @param livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+## @param livenessProbe.failureThreshold Failure threshold for livenessProbe
+## @param livenessProbe.successThreshold Success threshold for livenessProbe
+##
+livenessProbe:
+  enabled: false
+#   httpGet:
+#     path: /
+#     port: http
+#     httpHeaders:
+#       - name: Custom-Header
+#         value: Awesome
+#   grpc:
+#     port: 2379
+#   tcpSocket:
+#     port: http
+#   exec:
+#     command:
+#     - cat
+#     - /tmp/healthy
+  initialDelaySeconds: 600
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
+  successThreshold: 1
+
+## Configure extra options for readiness probe
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param readinessProbe.enabled Enable readinessProbe
+## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+## @param readinessProbe.periodSeconds Period seconds for readinessProbe
+## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+## @param readinessProbe.failureThreshold Failure threshold for readinessProbe
+## @param readinessProbe.successThreshold Success threshold for readinessProbe
+##
+readinessProbe:
+  enabled: true
+#   httpGet:
+#     path: /
+#     port: http
+#     httpHeaders:
+#       - name: Custom-Header
+#         value: Awesome
+#   grpc:
+#     port: 2379
+#   tcpSocket:
+#     port: http
+#   exec:
+#     command:
+#     - cat
+#     - /tmp/healthy
+  initialDelaySeconds: 30
+  periodSeconds: 5
+  timeoutSeconds: 1
+  failureThreshold: 5
+  successThreshold: 1
+
+## APP's resource requests and limits
+## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+## We usually recommend not to specify default resources and to leave this as a conscious
+## choice for the user. This also increases chances charts run on environments with little
+## resources, such as Minikube. If you do want to specify resources, uncomment the following
+## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+## @param resources.limits The resources limits for the container
+## @param resources.requests The requested resources for the container
+##
+resources:
+  ## Example:
+  ## limits:
+  ##    cpu: 100m
+  ##    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  ## Examples:
+  ## requests:
+  ##    cpu: 100m
+  ##    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+## @param lifecycleHooks LifecycleHook to set additional configuration at startup Evaluated as a template
+##
+lifecycleHooks: {}
+
+## Add an horizontal pod autoscaler
+## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+## @param autoscaling.enabled Deploy a HorizontalPodAutoscaler object for the APP deployment
+## @param autoscaling.minReplicas Minimum number of replicas to scale back
+## @param autoscaling.maxReplicas Maximum number of replicas to scale out
+## @param autoscaling.metrics [array] Metrics to use when deciding to scale the deployment (evaluated as a template)
+##
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: 80
+
+## Configure the ConfigMap resource that allows you to store non-confidential data in key-value pairs.
+## ref: https://kubernetes.io/docs/concepts/configuration/configmap/
+##
+configMap:
+  ## @param configMap.data store data in key-value pairs
+  ##
+  ## e.g:
+  ## data:
+  ##   config.yaml: |
+  ##     mode: production
+  ##   FOO: bar
+  ##   DEBUG: true
+  ##
+  data: {}
+
+## Configure the ingress resource that allows you to access the
+## APP installation. Set up the URL
+## ref: https://kubernetes.io/docs/user-guide/ingress/
+##
+ingress:
+  ## @param ingress.enabled Enable ingress controller resource
+  ##
+  enabled: false
+
+  ## @param ingress.pathType Ingress Path type
+  ##
+  pathType: ImplementationSpecific
+
+  ## @param ingress.apiVersion Override API Version (automatically detected if not set)
+  ##
+  apiVersion: ""
+
+  ## @param ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
+  ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ##
+  ingressClassName: ""
+
+  ## @param ingress.hostname Default host for the ingress resource
+  ##
+  hostname: app.local
+
+  ## @param ingress.path The Path to APP. You may need to set this to '/*' in order to use this
+  ## with ALB ingress controllers.
+  ##
+  path: /
+
+  ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  ## For a full list of possible ingress annotations, please see
+  ## ref: https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md
+  ## Use this parameter to set the required annotations for cert-manager, see
+  ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  ##
+  ## e.g:
+  ## annotations:
+  ##   kubernetes.io/ingress.class: nginx
+  ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+  ##
+  annotations: {}
+
+  ## @param ingress.tls Enable TLS configuration for the hostname defined at ingress.hostname parameter
+  ## TLS certificates will be retrieved from a TLS secret with name: {{- printf "%s-tls" .Values.ingress.hostname }}
+  ## You can use the ingress.secrets parameter to create this TLS secret or relay on cert-manager to create it
+  ##
+  tls: []
+
+## APP service parameters
+##
+service:
+  ## @param service.type APP service type
+  ##
+  type: ClusterIP
+
+  ## @param service.ports APP service
+  ##
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: http
+
+  ## @param service.sessionAffinity Control where client requests go, to the same pod or round-robin
+  ## Values: ClientIP or None
+  ## ref: https://kubernetes.io/docs/user-guide/services/
+  ##
+  sessionAffinity: None
+
+  ## @param service.clusterIP APP service Cluster IP
+  ## e.g.:
+  ## clusterIP: None
+  ##
+  clusterIP: ""
+
+  ## @param service.loadBalancerIP APP service Load Balancer IP
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+  ##
+  loadBalancerIP: ""
+
+  ## @param service.loadBalancerSourceRanges APP service Load Balancer sources
+  ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  ## e.g:
+  ## loadBalancerSourceRanges:
+  ##   - 10.10.10.0/24
+  ##
+  loadBalancerSourceRanges: []
+
+  ## @param service.externalTrafficPolicy APP service external traffic policy
+  ## ref https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+  ##
+  externalTrafficPolicy: Cluster
+
+  ## @param service.annotations Additional custom annotations for APP service
+  ##
+  annotations: {}
+
+## Prometheus Operator ServiceMonitor configuration
+##
+serviceMonitor:
+  ## @param serviceMonitor.enabled Specify if a ServiceMonitor will be deployed for Prometheus Operator
+  ##
+  enabled: false
+
+  ## @param serviceMonitor.namespace Namespace in which Prometheus is running
+  ##
+  namespace: monitoring
+
+  ## @param serviceMonitor.labels Extra labels for the ServiceMonitor
+  ##
+  labels:
+    prometheus: kube-prometheus
+
+  ## @param serviceMonitor.annotations Additional ServiceMonitor annotations (evaluated as a template)
+  ##
+  annotations: {}
+
+  ## @param serviceMonitor.jobLabel The name of the label on the target service to use as the job name in Prometheus
+  ##
+  jobLabel: ""
+
+  ## @param serviceMonitor.honorLabels honorLabels chooses the metric's labels on collisions with target labels
+  ##
+  honorLabels: false
+
+  ## @param serviceMonitor.interval How frequently to scrape metrics
+  ## e.g:
+  ## interval: 10s
+  ##
+  interval: ""
+
+  ## @param serviceMonitor.scrapeTimeout Timeout after which the scrape is ended
+  ## e.g:
+  ## scrapeTimeout: 10s
+  ##
+  scrapeTimeout: ""
+
+  ## @param serviceMonitor.metricRelabelings [array] Specify additional relabeling of metrics
+  ##
+  metricRelabelings: []
+
+  ## @param serviceMonitor.relabelings [array] Specify general relabeling
+  ##
+  relabelings: []
+
+  ## @param serviceMonitor.selector Prometheus instance selector labels
+  ## ref: https://github.com/bitnami/charts/tree/master/bitnami/prometheus-operator#prometheus-configuration
+  ##
+  selector: {}
+
+  ## @param serviceMonitor.namespaceSelector is a selector for selecting either all namespaces or a list of namespaces.
+  ##
+  namespaceSelector: {}
+
+## Service account for APP pods to use.
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+##
+serviceAccount:
+  ## @param serviceAccount.create Enable creation of ServiceAccount for APP pods
+  ##
+  create: false
+
+  ## @param serviceAccount.name The name of the ServiceAccount to use.
+  ## If not set and create is true, a name is generated using the common.names.fullname template
+  ##
+  name: ""
+
+  ## @param serviceAccount.automountServiceAccountToken Allows auto mount of ServiceAccountToken on the serviceAccount created
+  ## Can be set to false if pods using this serviceAccount do not need to use K8s API
+  ##
+  automountServiceAccountToken: true
+
+  ## @param serviceAccount.annotations Additional custom annotations for the ServiceAccount
+  ##
+  annotations: {}
