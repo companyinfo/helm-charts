@@ -81,9 +81,33 @@ spec:
           {{- if .Values.resources }}
           resources: {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
+          {{- if or .Values.configMap.mounted .Values.extraVolumeMounts }}
+          volumeMounts:
+            {{- if .Values.configMap.mounted }}
+            - name: {{ include "common.names.fullname" . }}
+              mountPath: {{ .Values.configMap.mountPath }}
+              {{- if .Values.configMap.subPath }}
+              subPath: {{ .Values.configMap.subPath }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+          {{- end }}
         {{- if .Values.sidecars }}
         {{- include "common.tplvalues.render" (dict "value" .Values.sidecars "context" $) | nindent 8 }}
         {{- end }}
+      {{- if or .Values.configMap.mounted .Values.extraVolumes }}
+      volumes:
+        {{- if .Values.configMap.mounted }}
+        - name: {{ include "common.names.fullname" . }}
+          configMap:
+            name: {{ include "common.names.fullname" . }}
+        {{- end }}
+        {{- if .Values.extraVolumes }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
       {{- include "common.images.pullSecrets" (dict "images" (list .Values.image) "global" .Values.global) | nindent 6 }}
       {{- if .Values.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}
