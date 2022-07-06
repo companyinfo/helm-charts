@@ -327,6 +327,26 @@ readinessProbe:
   failureThreshold: 5
   successThreshold: 1
 
+## @param extraVolumes Array to add extra volumes (evaluated as a template)
+## Example:
+## extraVolumes:
+##   - name: vol-conf
+##     configMap:
+##       name: "configmap-name"
+##   - name: vol-secret
+##     secret:
+##       secretName: "secret-name"
+##
+extraVolumes: []
+
+## @param extraVolumeMounts Array to add extra mounts (normally used with extraVolumes, evaluated as a template)
+## Example:
+## extraVolumeMounts:
+##   - name: vol-conf
+##     mountPath: "/app/config"
+##
+extraVolumeMounts: []
+
 ## APP's resource requests and limits
 ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
 ## We usually recommend not to specify default resources and to leave this as a conscious
@@ -377,6 +397,9 @@ autoscaling:
 ## ref: https://kubernetes.io/docs/concepts/configuration/configmap/
 ##
 configMap:
+  mounted: true
+  mountPath: "/app/config"
+  subPath: ""
   ## @param configMap.data store data in key-value pairs
   ##
   ## e.g:
