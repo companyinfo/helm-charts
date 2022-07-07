@@ -13,5 +13,15 @@ metadata:
   {{- end }}
 {{- if .Values.configMap.data }}
 data: {{- include "common.tplvalues.render" (dict "value" .Values.configMap.data "context" $) | nindent 2 }}
+  {{- range $k, $v := .Values.configMap.data }}
+  {{- $configKey := (include "common.tplvalues.render" (dict "value" $k "context" $)) }}
+  {{- $configValue := (include "common.tplvalues.render" (dict "value" $v "context" $)) }}
+  {{- if kindIs "map" $configValue }}
+  {{ $configKey }}: |-
+    {{ $configValue }}
+  {{- else }}
+  {{ $configKey }}: {{ $configValue }}
+  {{- end }}
+  {{- end }}
 {{- end }}
 {{- end -}}
