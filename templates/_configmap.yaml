@@ -12,7 +12,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 {{- if .Values.configMap.data }}
-data: {{- include "common.tplvalues.render" (dict "value" .Values.configMap.data "context" $) | nindent 2 }}
+data:
   {{- range $k, $v := .Values.configMap.data }}
   {{- $configKey := (include "common.tplvalues.render" (dict "value" $k "context" $)) }}
   {{- $configValue := (include "common.tplvalues.render" (dict "value" $v "context" $)) }}
