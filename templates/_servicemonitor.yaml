@@ -1,12 +1,12 @@
 {{- define "helmet.servicemonitor" -}}
 {{- if .Values.serviceMonitor.enabled }}
+---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "common.names.fullname" . }}
-  namespace: {{ default .Release.Namespace .Values.serviceMonitor.namespace }}
   {{- if .Values.serviceMonitor.namespace }}
-  namespace: {{ .Values.serviceMonitor.namespace }}
+  namespace: {{ .Values.serviceMonitor.namespace | quote }}
   {{- else }}
   namespace: {{ include "common.names.namespace" . | quote }}
   {{- end }}
@@ -44,7 +44,7 @@ spec:
       {{- end }}
   namespaceSelector:
   {{- if .Values.serviceMonitor.namespaceSelector }}
-  {{- include "common.tplvalues.render" (dict "value" .Values.serviceMonitor.namespaceSelector "context" $) | nindent 4 }}
+  {{- include "common.tplvalues.render" (dict "value" .Values.serviceMonitor.namespaceSelector "context" $) | indent 4 }}
   {{- else }}
     matchNames:
       - {{ include "common.names.namespace" . | quote }}
