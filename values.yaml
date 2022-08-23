@@ -416,7 +416,7 @@ exports:
     ## ref: https://kubernetes.io/docs/concepts/configuration/configmap/
     ##
     configMap:
-      mounted: true
+      mounted: false
       mountPath: "/app/config"
       subPath: ""
       ## @param configMap.data store data in key-value pairs
