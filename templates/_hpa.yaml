@@ -45,6 +45,8 @@ spec:
           averageUtilization: {{ .Values.autoscaling.targetMemory }}
       {{- end }}
   {{- end }}
+  {{- if .Values.autoscaling.metrics }}
   {{- include "common.tplvalues.render" (dict "value" .Values.autoscaling.metrics "context" $) | nindent 4 }}
+  {{- end }}
 {{- end }}
 {{- end -}}
