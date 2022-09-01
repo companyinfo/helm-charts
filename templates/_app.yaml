@@ -17,7 +17,7 @@
 {{ include "helmet.tls.secrets" . }}
 {{ include "helmet.tls.selfsigned" . }}
 
-{{- if .Values.service.ports }}
+{{- if and .Values.ports .Values.service.ports }}
 {{ include "helmet.service" . }}
 {{- end }}
 
