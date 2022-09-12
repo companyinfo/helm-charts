@@ -1,2 +1,3 @@
 charts
-.idea
+examples/**/charts
+examples/**/charts/**/charts

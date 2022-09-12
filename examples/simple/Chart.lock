@@ -1,0 +1,6 @@
+dependencies:
+- name: helmet
+  repository: https://nexus.ci.fdmg.org/repository/helm-repo
+  version: 0.4.5
+digest: sha256:53133e3ee01ee1612bfc649c43a7e0086794a8c509f070b1fe572d748f44a25c
+generated: "2022-09-05T16:44:32.831090129+02:00"
