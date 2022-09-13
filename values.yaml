@@ -24,15 +24,19 @@ exports:
     ##
     kubeVersion: ""
 
-    ## @param nameOverride String to partially override helmet.fullname template (will maintain the release name)
+    ## @param nameOverride String to partially override common.names.fullname template with a string (will maintain the release name)
     ##
     nameOverride: ""
 
-    ## @param fullnameOverride String to fully override helmet.fullname template
+    ## @param fullnameOverride String to fully override common.names.fullname template with a string
     ##
     fullnameOverride: ""
 
-    ## @param clusterDomain Kubernetes Cluster Domain
+    ## @param namespaceOverride String to fully override common.names.namespace template with a string
+    ##
+    namespaceOverride: ""
+
+    ## @param clusterDomain Kubernetes Cluster Domain name
     ##
     clusterDomain: cluster.local
 
@@ -48,12 +52,12 @@ exports:
 
     ## Helmet (App) image version
     ## ref: https://kubernetes.io/docs/concepts/containers/images
-    ## @param image.registry APP image registry
-    ## @param image.repository APP image repository
-    ## @param image.tag APP image tag (immutable tags are recommended)
-    ## @param image.digest app image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
-    ## @param image.pullPolicy APP image pull policy
-    ## @param image.pullSecrets APP image pull secrets
+    ## @param image.registry Image registry
+    ## @param image.repository Image repository
+    ## @param image.tag Image tag (immutable tags are recommended)
+    ## @param image.digest Image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+    ## @param image.pullPolicy Image pull policy
+    ## @param image.pullSecrets Image pull secrets
     ##
     image:
       registry: docker.io
@@ -88,6 +92,112 @@ exports:
         containerPort: 8080
         protocol: TCP
 
+    ## Configure extra options for liveness probe
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+    ## @param livenessProbe.enabled Enable livenessProbe
+    ## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+    ## @param livenessProbe.periodSeconds Period seconds for livenessProbe
+    ## @param livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+    ## @param livenessProbe.failureThreshold Failure threshold for livenessProbe
+    ## @param livenessProbe.successThreshold Success threshold for livenessProbe
+    ##
+    ## Example:
+    ## livenessProbe:
+    ##   enabled: true
+    ##   httpGet:
+    ##     path: /
+    ##     port: http
+    ##     httpHeaders:
+    ##       - name: Custom-Header
+    ##         value: Awesome
+    ##   grpc:
+    ##     port: 2379
+    ##   tcpSocket:
+    ##     port: http
+    ##   exec:
+    ##     command:
+    ##       - cat
+    ##       - /tmp/healthy
+    ##   initialDelaySeconds: 0
+    ##   periodSeconds: 10
+    ##   timeoutSeconds: 1
+    ##   failureThreshold: 3
+    ##   successThreshold: 1
+    ##
+    livenessProbe:
+      enabled: false
+
+    ## Configure extra options for readiness probe
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+    ## @param readinessProbe.enabled Enable readinessProbe
+    ## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+    ## @param readinessProbe.periodSeconds Period seconds for readinessProbe
+    ## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+    ## @param readinessProbe.failureThreshold Failure threshold for readinessProbe
+    ## @param readinessProbe.successThreshold Success threshold for readinessProbe
+    ##
+    ## Example:
+    ## readinessProbe:
+    ##   enabled: true
+    ##   httpGet:
+    ##     path: /
+    ##     port: http
+    ##     httpHeaders:
+    ##       - name: Custom-Header
+    ##         value: Awesome
+    ##   grpc:
+    ##     port: 2379
+    ##   tcpSocket:
+    ##     port: http
+    ##   exec:
+    ##     command:
+    ##       - cat
+    ##       - /tmp/healthy
+    ##   initialDelaySeconds: 0
+    ##   periodSeconds: 10
+    ##   timeoutSeconds: 1
+    ##   failureThreshold: 3
+    ##   successThreshold: 1
+    ##
+    readinessProbe:
+      enabled: false
+
+    ## Configure extra options for startup probe
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+    ## @param startupProbe.enabled Enable startupProbe
+    ## @param startupProbe.httpGet.path Request path for startupProbe
+    ## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+    ## @param startupProbe.periodSeconds Period seconds for startupProbe
+    ## @param startupProbe.timeoutSeconds Timeout seconds for startupProbe
+    ## @param startupProbe.failureThreshold Failure threshold for startupProbe
+    ## @param startupProbe.successThreshold Success threshold for startupProbe
+    ##
+    ## Example:
+    ## startupProbe:
+    ##   enabled: true
+    ##   httpGet:
+    ##     path: /
+    ##     port: http
+    ##     httpHeaders:
+    ##       - name: Custom-Header
+    ##         value: Awesome
+    ##   grpc:
+    ##     port: 2379
+    ##   tcpSocket:
+    ##     port: http
+    ##   exec:
+    ##     command:
+    ##       - cat
+    ##       - /tmp/healthy
+    ##   initialDelaySeconds: 0
+    ##   periodSeconds: 10
+    ##   timeoutSeconds: 1
+    ##   failureThreshold: 3
+    ##   successThreshold: 1
+    ##
+    startupProbe:
+      enabled: false
+
     ## Configure APP pods Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
     ## @param podSecurityContext.enabled Enabled APP pods' Security Context
@@ -99,29 +209,54 @@ exports:
 
     ## Configure Container Security Context (only main container)
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-    ## @param containerSecurityContext.enabled Enable APP containers' Security Context
-    ## @param containerSecurityContext.runAsUser APP containers' Security Context
-    ## @param containerSecurityContext.runAsNonRoot Set Controller container's Security Context runAsNonRoot
+    ## @param containerSecurityContext.enabled Enabled APP containers' Security Context
+    ## @param containerSecurityContext.runAsUser Set APP containers' Security Context runAsUser
+    ## @param containerSecurityContext.runAsNonRoot Set APP container's Security Context runAsNonRoot
     ##
     containerSecurityContext:
       enabled: false
       runAsUser: 1001
       runAsNonRoot: true
 
+    ## @param lifecycleHooks LifecycleHook to set additional configuration at startup Evaluated as a template
+    ##
+    lifecycleHooks: {}
+
+    ## APP's resource requests and limits
+    ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+    ## We usually recommend not to specify default resources and to leave this as a conscious
+    ## choice for the user. This also increases chances charts run on environments with little
+    ## resources, such as Minikube. If you do want to specify resources, uncomment the following
+    ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    ## @param resources.limits The resources limits for the container
+    ## @param resources.requests The requested resources for the container
+    ##
+    resources:
+      ## Example:
+      ## limits:
+      ##    cpu: 100m
+      ##    memory: 128Mi
+      limits: {}
+      ## Examples:
+      ## requests:
+      ##    cpu: 100m
+      ##    memory: 128Mi
+      requests: {}
+
     ## @param hostAliases Add deployment host aliases
     ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
     ##
     hostAliases: []
 
-    ## @param podAnnotations Additional pod annotations
-    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
-    ##
-    podAnnotations: {}
-
     ## @param podLabels Additional pod labels
     ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
     ##
     podLabels: {}
+
+    ## @param podAnnotations Additional pod annotations
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    ##
+    podAnnotations: {}
 
     ## @param podAffinityPreset Pod affinity preset. Allowed values: soft, hard
     ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
@@ -196,6 +331,26 @@ exports:
       type: RollingUpdate
       rollingUpdate: {}
 
+    ## @param extraVolumes Array to add extra volumes (evaluated as a template)
+    ## Example:
+    ## extraVolumes:
+    ##   - name: vol-conf
+    ##     configMap:
+    ##       name: "configmap-name"
+    ##   - name: vol-secret
+    ##     secret:
+    ##       secretName: "secret-name"
+    ##
+    extraVolumes: []
+
+    ## @param extraVolumeMounts Array to add extra mounts (normally used with extraVolumes, evaluated as a template)
+    ## Example:
+    ## extraVolumeMounts:
+    ##   - name: vol-conf
+    ##     mountPath: "/app/config"
+    ##
+    extraVolumeMounts: []
+
     ## @param sidecars Add additional sidecar containers to the APP pods
     ## Example:
     ## sidecars:
@@ -228,7 +383,7 @@ exports:
     ##
     args: []
 
-    ## @param envVars Extra environment variables to be set on APP container
+    ## @param envVars Environment variables to be set on APP container
     ## Example:
     ## envVars:
     ##   - name: FOO
@@ -236,164 +391,13 @@ exports:
     ##
     envVars: []
 
-    ## @param envVarsConfigMap ConfigMap with extra environment variables
+    ## @param envVarsConfigMap ConfigMap with environment variables
     ##
     envVarsConfigMap: ""
 
-    ## @param envVarsSecret Secret with extra environment variables
+    ## @param envVarsSecret Secret with environment variables
     ##
     envVarsSecret: ""
-
-    ## Configure extra options for startup probe
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-    ## @param startupProbe.enabled Enable startupProbe
-    ## @param startupProbe.httpGet.path Request path for startupProbe
-    ## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
-    ## @param startupProbe.periodSeconds Period seconds for startupProbe
-    ## @param startupProbe.timeoutSeconds Timeout seconds for startupProbe
-    ## @param startupProbe.failureThreshold Failure threshold for startupProbe
-    ## @param startupProbe.successThreshold Success threshold for startupProbe
-    ##
-    ## Example:
-    ## startupProbe:
-    ##   enabled: true
-    ##   httpGet:
-    ##     path: /
-    ##     port: http
-    ##     httpHeaders:
-    ##       - name: Custom-Header
-    ##         value: Awesome
-    ##   grpc:
-    ##     port: 2379
-    ##   tcpSocket:
-    ##     port: http
-    ##   exec:
-    ##     command:
-    ##       - cat
-    ##       - /tmp/healthy
-    ##   initialDelaySeconds: 0
-    ##   periodSeconds: 10
-    ##   timeoutSeconds: 1
-    ##   failureThreshold: 3
-    ##   successThreshold: 1
-    ##
-    startupProbe:
-      enabled: false
-
-    ## Configure extra options for liveness probe
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-    ## @param livenessProbe.enabled Enable livenessProbe
-    ## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
-    ## @param livenessProbe.periodSeconds Period seconds for livenessProbe
-    ## @param livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-    ## @param livenessProbe.failureThreshold Failure threshold for livenessProbe
-    ## @param livenessProbe.successThreshold Success threshold for livenessProbe
-    ##
-    ## Example:
-    ## livenessProbe:
-    ##   enabled: true
-    ##   httpGet:
-    ##     path: /
-    ##     port: http
-    ##     httpHeaders:
-    ##       - name: Custom-Header
-    ##         value: Awesome
-    ##   grpc:
-    ##     port: 2379
-    ##   tcpSocket:
-    ##     port: http
-    ##   exec:
-    ##     command:
-    ##       - cat
-    ##       - /tmp/healthy
-    ##   initialDelaySeconds: 0
-    ##   periodSeconds: 10
-    ##   timeoutSeconds: 1
-    ##   failureThreshold: 3
-    ##   successThreshold: 1
-    ##
-    livenessProbe:
-      enabled: false
-
-    ## Configure extra options for readiness probe
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-    ## @param readinessProbe.enabled Enable readinessProbe
-    ## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
-    ## @param readinessProbe.periodSeconds Period seconds for readinessProbe
-    ## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-    ## @param readinessProbe.failureThreshold Failure threshold for readinessProbe
-    ## @param readinessProbe.successThreshold Success threshold for readinessProbe
-    ##
-    ## Example:
-    ## readinessProbe:
-    ##   enabled: true
-    ##   httpGet:
-    ##     path: /
-    ##     port: http
-    ##     httpHeaders:
-    ##       - name: Custom-Header
-    ##         value: Awesome
-    ##   grpc:
-    ##     port: 2379
-    ##   tcpSocket:
-    ##     port: http
-    ##   exec:
-    ##     command:
-    ##       - cat
-    ##       - /tmp/healthy
-    ##   initialDelaySeconds: 0
-    ##   periodSeconds: 10
-    ##   timeoutSeconds: 1
-    ##   failureThreshold: 3
-    ##   successThreshold: 1
-    ##
-    readinessProbe:
-      enabled: false
-
-    ## @param extraVolumes Array to add extra volumes (evaluated as a template)
-    ## Example:
-    ## extraVolumes:
-    ##   - name: vol-conf
-    ##     configMap:
-    ##       name: "configmap-name"
-    ##   - name: vol-secret
-    ##     secret:
-    ##       secretName: "secret-name"
-    ##
-    extraVolumes: []
-
-    ## @param extraVolumeMounts Array to add extra mounts (normally used with extraVolumes, evaluated as a template)
-    ## Example:
-    ## extraVolumeMounts:
-    ##   - name: vol-conf
-    ##     mountPath: "/app/config"
-    ##
-    extraVolumeMounts: []
-
-    ## APP's resource requests and limits
-    ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-    ## We usually recommend not to specify default resources and to leave this as a conscious
-    ## choice for the user. This also increases chances charts run on environments with little
-    ## resources, such as Minikube. If you do want to specify resources, uncomment the following
-    ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    ## @param resources.limits The resources limits for the container
-    ## @param resources.requests The requested resources for the container
-    ##
-    resources:
-      ## Example:
-      ## limits:
-      ##    cpu: 100m
-      ##    memory: 128Mi
-      limits: {}
-      ## Examples:
-      ## requests:
-      ##    cpu: 100m
-      ##    memory: 128Mi
-      requests: {}
-
-    ## @param lifecycleHooks LifecycleHook to set additional configuration at startup Evaluated as a template
-    ##
-    lifecycleHooks: {}
 
     ## Add an horizontal pod autoscaler
     ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
@@ -453,11 +457,11 @@ exports:
       ##
       stringData: {}
 
-    ## Configure the ingress resource that allows you to access the App
+    ## Configure the ingress resource that allows you to access the APP
     ## ref: https://kubernetes.io/docs/user-guide/ingress/
     ##
     ingress:
-      ## @param ingress.enabled Enable ingress resource for the App
+      ## @param ingress.enabled Enable ingress resource for the APP
       ##
       enabled: false
 
@@ -576,7 +580,7 @@ exports:
       ##
       type: ClusterIP
 
-      ## @param service.ports APP service
+      ## @param service.ports APP service ports
       ##
       ports:
         - name: http
@@ -629,7 +633,7 @@ exports:
       ##
       namespace: ""
 
-      ## @param serviceMonitor.labels Extra labels for the ServiceMonitor
+      ## @param serviceMonitor.labels Additional ServiceMonitor labels (evaluated as a template)
       ##
       labels: {}
 

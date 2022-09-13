@@ -1,3 +1,4 @@
-.git/
+examples
+.git
 .gitignore
 .gitlab-ci.yml
