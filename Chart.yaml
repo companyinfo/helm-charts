@@ -15,5 +15,5 @@ maintainers:
     url: https://company.info
 dependencies:
   - name: common
-    version: "2.0.1"
+    version: "2.0.3"
     repository: "https://charts.bitnami.com/bitnami"
