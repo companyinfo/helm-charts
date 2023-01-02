@@ -1,0 +1,16 @@
+apiVersion: v2
+name: simple
+description: Simple Helm application chart sample
+type: application
+version: "0.1.0"
+appVersion: "0.1.0"
+
+maintainers:
+  - name: Company.info Developers
+    url: https://company.info
+dependencies:
+  - name: helmet
+    version: 0.4.5
+    repository: https://nexus.ci.fdmg.org/repository/helm-repo
+    import-values:
+      - defaults

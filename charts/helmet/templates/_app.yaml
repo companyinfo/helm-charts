@@ -1,0 +1,26 @@
+{{- define "helmet.app" -}}
+{{- if .Values.configMap.data }}
+{{ include "helmet.configmap" . }}
+{{- end }}
+
+{{- if .Values.image.repository }}
+{{ include "helmet.deployment" . }}
+{{- end }}
+
+{{ include "helmet.hpa" . }}
+{{ include "helmet.ingress" . }}
+
+{{- if or .Values.secret.data .Values.secret.stringData }}
+{{ include "helmet.secret" . }}
+{{- end }}
+
+{{ include "helmet.tls.secrets" . }}
+{{ include "helmet.tls.selfsigned" . }}
+
+{{- if and .Values.ports .Values.service.ports }}
+{{ include "helmet.service" . }}
+{{- end }}
+
+{{ include "helmet.serviceaccount" . }}
+{{ include "helmet.servicemonitor" . }}
+{{- end }}
