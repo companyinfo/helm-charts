@@ -3,8 +3,8 @@ name: helmet
 description: Helmet is a library Helm Chart for grouping common logic between Company.info charts. This chart is not deployable by itself.
 home: https://github.com/companyinfo/helm-charts/blob/main/charts/helmet
 type: library
-version: "0.4.6"
-appVersion: "0.4.6"
+version: "0.5.0"
+appVersion: "0.5.0"
 keywords:
   - common
   - helper
@@ -15,5 +15,5 @@ maintainers:
     url: https://company.info
 dependencies:
   - name: common
-    version: "2.0.3"
+    version: "2.2.2"
     repository: "https://charts.bitnami.com/bitnami"
