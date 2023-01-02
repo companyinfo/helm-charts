@@ -1,7 +1,7 @@
 apiVersion: v2
 name: helmet
-description: Helmet (Mohelmmad) is a library Helm Chart for grouping common logic between Company.info charts. This chart is not deployable by itself.
-home: https://gitlab.ci.fdmg.org/datacluster/helm-charts/helmet
+description: Helmet is a library Helm Chart for grouping common logic between Company.info charts. This chart is not deployable by itself.
+home: https://github.com/companyinfo/helm-charts/blob/main/charts/helmet
 type: library
 version: "0.4.6"
 appVersion: "0.4.6"
