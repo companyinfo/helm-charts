@@ -21,6 +21,10 @@ jobs:
         with:
           version: v3.10.0
 
+      - name: Add charts' dependency repositories
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
