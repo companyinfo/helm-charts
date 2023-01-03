@@ -1,10 +1,10 @@
 apiVersion: v2
 name: helmet
-description: Helmet is a library Helm Chart for grouping common logic between Company.info charts. This chart is not deployable by itself.
+description: Helmet is a library Helm Chart for grouping common logics. This chart is not deployable by itself.
 home: https://github.com/companyinfo/helm-charts/blob/main/charts/helmet
 type: library
-version: "0.5.1"
-appVersion: "0.5.1"
+version: "0.5.2"
+appVersion: "0.5.2"
 keywords:
   - common
   - helper
