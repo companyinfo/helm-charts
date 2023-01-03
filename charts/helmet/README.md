@@ -1,5 +1,4 @@
 # Helmet
-[![pipeline status](https://gitlab.ci.fdmg.org/datacluster/helm-charts/helmet/badges/v0.4.6/pipeline.svg)](https://gitlab.ci.fdmg.org/datacluster/helm-charts/helmet/-/commits/v0.4.6) [![Latest Release](https://gitlab.ci.fdmg.org/datacluster/helm-charts/helmet/-/badges/release.svg)](https://gitlab.ci.fdmg.org/datacluster/helm-charts/helmet/-/releases)
 
 The Helmet is a [Helm Library Chart](https://helm.sh/docs/topics/library_charts/) that defines many chart templates like Deployment, Service, Ingress, etc which can used in other application charts.
 
@@ -33,7 +32,7 @@ dependency on what we call the `Helmet` library.
 
 dependencies:
   - name: helmet
-    version: 0.5.1
+    version: 0.5.2
     repository: https://companyinfo.github.io/helm-charts
     import-values: # <== It is mandatory if you want to import the Helmet default values.
       - defaults
