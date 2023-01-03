@@ -33,8 +33,8 @@ dependency on what we call the `Helmet` library.
 
 dependencies:
   - name: helmet
-    version: 0.4.6
-    repository: https://nexus.ci.fdmg.org/repository/helm-repo
+    version: 0.5.1
+    repository: https://companyinfo.github.io/helm-charts
     import-values: # <== It is mandatory if you want to import the Helmet default values.
       - defaults
 ```
