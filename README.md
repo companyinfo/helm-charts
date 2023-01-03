@@ -1,4 +1,4 @@
-# Company.info Helm Charts
+# Company.info Helm Charts [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/companyinfo)](https://artifacthub.io/packages/search?repo=companyinfo)
 Company.info Helm charts repository.
 
 ## TL;DR
