@@ -66,7 +66,7 @@ ingress:
   enabled: true
 ```
 
-5. Update the Helm dependencies:
+5. Install the chart:
 ```shell
 $ helm install nginx .
 ```
