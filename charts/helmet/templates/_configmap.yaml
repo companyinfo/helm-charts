@@ -17,7 +17,7 @@ data:
   {{- range $k, $v := .Values.configMap.data }}
   {{- $configKey := (include "common.tplvalues.render" (dict "value" $k "context" $)) }}
   {{- $configValue := (include "common.tplvalues.render" (dict "value" $v "context" $)) }}
-  {{- if typeIs "map[string]interface {}" $v }}
+  {{- if or (typeIs "map[string]interface {}" $v) (typeIs "string" $v) }}
   {{ $configKey }}: |- {{ $configValue | nindent 4 }}
   {{- else }}
   {{ $configKey }}: {{ $configValue }}
