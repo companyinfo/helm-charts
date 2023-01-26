@@ -37,7 +37,7 @@ spec:
       initContainers: {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.podRestartPolicy }}
-      restartPolicy: {{- toYaml .Values.podRestartPolicy | nindent 8 }}
+      restartPolicy: {{ .Values.podRestartPolicy }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
