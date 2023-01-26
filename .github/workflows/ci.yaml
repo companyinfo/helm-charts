@@ -1,9 +1,12 @@
-name: Release Charts
+name: Charts CI
 
 on:
   push:
     branches:
-      - main
+      - 'main'
+  pull_request:
+    branches:
+      - '*'      
 
 jobs:
   release:
@@ -25,12 +28,20 @@ jobs:
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
 
+      - name: Helm lint
+        working-directory: ./charts
+        run: |
+          helm lint helmet
+
       - name: Configure Git
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Run chart-releaser
+        if: ${{ github.event_name != 'pull_request' }}
         uses: helm/chart-releaser-action@v1.4.1
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
