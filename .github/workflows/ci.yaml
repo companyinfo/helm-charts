@@ -9,13 +9,12 @@ on:
       - '*'      
 
 jobs:
-  release:
-    permissions:
-      contents: write
+  check:
+    name: Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -38,14 +37,34 @@ jobs:
         run: |
           helm lint helmet
 
+  release:
+    name: Release
+    needs: check
+    if: ${{ github.event_name != 'pull_request' }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.10.0
+
+      - name: Add charts' dependency repositories
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+
       - name: Configure Git
-        if: ${{ github.event_name != 'pull_request' }}
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Run chart-releaser
-        if: ${{ github.event_name != 'pull_request' }}
         uses: helm/chart-releaser-action@v1.4.1
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
