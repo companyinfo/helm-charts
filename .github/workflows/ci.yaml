@@ -28,6 +28,11 @@ jobs:
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
 
+      - name: Helm Build Dependencies
+        working-directory: ./charts
+        run: |
+          helm dependency build helmet
+ 
       - name: Helm lint
         working-directory: ./charts
         run: |
