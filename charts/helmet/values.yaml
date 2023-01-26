@@ -198,6 +198,11 @@ exports:
     startupProbe:
       enabled: false
 
+    ## Configure pod Restart Policy
+    ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy
+    ## @param RestartPolicy Restart policy for all containers within the pod
+    podRestartPolicy: Always
+
     ## Configure APP pods Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
     ## @param podSecurityContext.enabled Enabled APP pods' Security Context
