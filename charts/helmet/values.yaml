@@ -334,7 +334,6 @@ exports:
     ##
     updateStrategy:
       type: RollingUpdate
-      rollingUpdate: {}
 
     ## @param extraVolumes Array to add extra volumes (evaluated as a template)
     ## Example:
