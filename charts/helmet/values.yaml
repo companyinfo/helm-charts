@@ -438,6 +438,14 @@ exports:
       ##
       data: {}
 
+      ## @param secret.annotations Additional custom annotations for the ConfigMap
+      ##
+      annotations: {}
+
+      ## @param secret.labels Additional custom labels for the ConfigMap
+      ##
+      labels: {}
+
     ## Configure the Secret resource that allows you to store a small amount of sensitive data such as a password, a token, or a key.
     ## ref: https://kubernetes.io/docs/concepts/configuration/secret
     ##
@@ -460,6 +468,14 @@ exports:
       ##   password: t0p-Secret
       ##
       stringData: {}
+
+      ## @param secret.annotations Additional custom annotations for the Secret
+      ##
+      annotations: {}
+
+      ## @param secret.labels Additional custom labels for the Secret
+      ##
+      labels: {}
 
     ## Configure the ingress resource that allows you to access the APP
     ## ref: https://kubernetes.io/docs/user-guide/ingress/
@@ -703,3 +719,7 @@ exports:
       ## @param serviceAccount.annotations Additional custom annotations for the ServiceAccount
       ##
       annotations: {}
+
+      ## @param serviceAccount.labels Additional custom labels for the ServiceAccount
+      ##
+      labels: {}

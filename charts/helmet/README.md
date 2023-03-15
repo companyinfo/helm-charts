@@ -32,7 +32,7 @@ dependency on what we call the `Helmet` library.
 
 dependencies:
   - name: helmet
-    version: 0.5.2
+    version: 0.6.3
     repository: https://companyinfo.github.io/helm-charts
     import-values: # <== It is mandatory if you want to import the Helmet default values.
       - defaults
@@ -167,21 +167,25 @@ $ helm install nginx .
 
 ### ConfigMap parameters
 
-| Name                  | Description                               | Value         |
-|-----------------------|-------------------------------------------|---------------|
-| `configMap.mounted`   | Mount the ConfigMap in the main container | `false`       |
-| `configMap.mountPath` | ConfigMap mount path                      | `/app/config` |
-| `configMap.subPath`   | ConfigMap sub path                        | `""`          |
-| `configMap.data`      | ConfigMap data                            | `{}`          |
+| Name                    | Description                                     | Value         |
+|-------------------------|-------------------------------------------------|---------------|
+| `configMap.mounted`     | Mount the ConfigMap in the main container       | `false`       |
+| `configMap.mountPath`   | ConfigMap mount path                            | `/app/config` |
+| `configMap.subPath`     | ConfigMap sub path                              | `""`          |
+| `configMap.data`        | ConfigMap data                                  | `{}`          |
+| `configMap.annotations` | Additional custom annotations for the ConfigMap | `{}`          |
+| `configMap.labels`      | Additional custom labels for the ConfigMap      | `{}`          |
 
 
 ### Secret parameters
 
-| Name                | Description                                                             | Value    |
-|---------------------|-------------------------------------------------------------------------|----------|
-| `secret.type`       | The type is used to facilitate programmatic handling of the Secret data | `Opaque` |
-| `secret.data`       | Store data in key-value pairs (base64 encoded)                          | `{}`     |
-| `secret.stringData` | Store data in key-value pairs                                           | `{}`     |
+| Name                 | Description                                                             | Value    |
+|----------------------|-------------------------------------------------------------------------|----------|
+| `secret.type`        | The type is used to facilitate programmatic handling of the Secret data | `Opaque` |
+| `secret.data`        | Store data in key-value pairs (base64 encoded)                          | `{}`     |
+| `secret.stringData`  | Store data in key-value pairs                                           | `{}`     |
+| `secret.annotations` | Additional custom annotations for the Secret                            | `{}`     |
+| `secret.labels`      | Additional custom labels for the Secret                                 | `{}`     |
 
 
 ### Traffic Exposure (Ingress) parameters
@@ -245,6 +249,7 @@ $ helm install nginx .
 | `serviceAccount.name`                         | The name of the ServiceAccount to use                                  | `""`    |
 | `serviceAccount.automountServiceAccountToken` | Allows auto mount of ServiceAccountToken on the serviceAccount created | `true`  |
 | `serviceAccount.annotations`                  | Additional custom annotations for the ServiceAccount                   | `{}`    |
+| `serviceAccount.labels`                       | Additional custom labels for the ServiceAccount                        | `{}`    |
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
