@@ -225,20 +225,22 @@ $ helm install nginx .
 
 ### Prometheus Operator ServiceMonitor parameters
 
-| Name                               | Description                                                                                     | Value   |
-|------------------------------------|-------------------------------------------------------------------------------------------------|---------|
-| `serviceMonitor.enabled`           | Specify if a ServiceMonitor will be deployed for Prometheus Operator                            | `false` |
-| `serviceMonitor.namespace`         | Namespace in which Prometheus is running                                                        | `""`    |
-| `serviceMonitor.labels`            | Additional ServiceMonitor labels (evaluated as a template)                                      | `{}`    |
-| `serviceMonitor.annotations`       | Additional ServiceMonitor annotations (evaluated as a template)                                 | `{}`    |
-| `serviceMonitor.jobLabel`          | The name of the label on the target service to use as the job name in Prometheus                | `""`    |
-| `serviceMonitor.honorLabels`       | The honorLabels chooses the metric's labels on collisions with target labels                    | `false` |
-| `serviceMonitor.interval`          | How frequently to scrape metrics                                                                | `""`    |
-| `serviceMonitor.scrapeTimeout`     | Timeout after which the scrape is ended                                                         | `""`    |
-| `serviceMonitor.metricRelabelings` | Specify additional relabeling of metrics                                                        | `[]`    |
-| `serviceMonitor.relabelings`       | Specify general relabeling                                                                      | `[]`    |
-| `serviceMonitor.selector`          | Prometheus instance selector labels                                                             | `{}`    |
-| `serviceMonitor.namespaceSelector` | The namespaceSelector is a selector for selecting either all namespaces or a list of namespaces | `{}`    |
+| Name                               | Description                                                                                     | Value     |
+|------------------------------------|-------------------------------------------------------------------------------------------------|-----------|
+| `serviceMonitor.enabled`           | Specify if a ServiceMonitor will be deployed for Prometheus Operator                            | `false`   |
+| `serviceMonitor.namespace`         | Namespace in which Prometheus is running                                                        | `""`      |
+| `serviceMonitor.labels`            | Additional ServiceMonitor labels (evaluated as a template)                                      | `{}`      |
+| `serviceMonitor.annotations`       | Additional ServiceMonitor annotations (evaluated as a template)                                 | `{}`      |
+| `serviceMonitor.jobLabel`          | The name of the label on the target service to use as the job name in Prometheus                | `""`      |
+| `serviceMonitor.honorLabels`       | The honorLabels chooses the metric's labels on collisions with target labels                    | `false`   |
+| `serviceMonitor.interval`          | How frequently to scrape metrics                                                                | `""`      |
+| `serviceMonitor.scrapeTimeout`     | Timeout after which the scrape is ended                                                         | `""`      |
+| `serviceMonitor.metricRelabelings` | Specify additional relabeling of metrics                                                        | `[]`      |
+| `serviceMonitor.relabelings`       | Specify general relabeling                                                                      | `[]`      |
+| `serviceMonitor.selector`          | Prometheus instance selector labels                                                             | `{}`      |
+| `serviceMonitor.namespaceSelector` | The namespaceSelector is a selector for selecting either all namespaces or a list of namespaces | `{}`      |
+| `serviceMonitor.port`              | The port used by ServiceMonitor                                                                 | `http`    |
+| `serviceMonitor.path`              | The path used by ServiceMonitor                                                                 | `metrics` |
 
 
 ### ServiceAccount parameters
