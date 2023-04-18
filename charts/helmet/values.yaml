@@ -698,6 +698,14 @@ exports:
       ##
       namespaceSelector: {}
 
+      ## @param serviceMonitor.port port used by serviceMonitor
+      ##
+      port: "http"
+
+      ## @param serviceMonitor.path path used by serviceMonitor
+      ##
+      path: "/metrics"
+
     ## Service account for APP pods to use.
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
     ##
