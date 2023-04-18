@@ -25,16 +25,8 @@ spec:
   jobLabel: {{ .Values.serviceMonitor.jobLabel }}
   {{- end }}
   endpoints:
-    {{- if and .Values.serviceMonitor.port }}
-    - port:  {{ .Values.serviceMonitor.port }}
-    {{- else }}
-    - port: http
-    {{- end }}
-    {{- if and .Values.serviceMonitor.path }}
-      path: {{ .Values.serviceMonitor.path }}
-     {{- else }}
-      path: "/metrics"
-    {{- end }}
+    - port:  {{ .Values.serviceMonitor.port  | quote }}
+      path: {{ .Values.serviceMonitor.path | quote }}
      {{- include "common.tplvalues.render" (dict "value" .Values.serviceMonitor.namespaceSelector "context" $) | indent 4 }}
       {{- if .Values.serviceMonitor.interval }}
       interval: {{ .Values.serviceMonitor.interval }}
