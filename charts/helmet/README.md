@@ -32,7 +32,7 @@ dependency on what we call the `Helmet` library.
 
 dependencies:
   - name: helmet
-    version: 0.6.3
+    version: 0.6.5
     repository: https://companyinfo.github.io/helm-charts
     import-values: # <== It is mandatory if you want to import the Helmet default values.
       - defaults
