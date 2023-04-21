@@ -27,7 +27,6 @@ spec:
   endpoints:
     - port:  {{ .Values.serviceMonitor.port  | quote }}
       path: {{ .Values.serviceMonitor.path | quote }}
-     {{- include "common.tplvalues.render" (dict "value" .Values.serviceMonitor.namespaceSelector "context" $) | indent 4 }}
       {{- if .Values.serviceMonitor.interval }}
       interval: {{ .Values.serviceMonitor.interval }}
       {{- end }}
