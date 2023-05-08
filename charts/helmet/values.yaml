@@ -40,6 +40,14 @@ exports:
     ##
     clusterDomain: cluster.local
 
+    ## @param annotations Additional annotations to be added to the App Deployment or Statefulset. Evaluated as a template
+    ##
+    annotations: {}
+
+    ## @param labels Additional labels to be added to the App Deployment or Statefulset. Evaluated as a template
+    ##
+    labels: {}
+
     ## @param commonLabels Labels to be added to all deployed resources
     ##
     commonLabels: {}
