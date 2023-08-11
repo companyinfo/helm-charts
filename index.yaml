@@ -2,6 +2,30 @@ apiVersion: v1
 entries:
   helmet:
   - apiVersion: v2
+    appVersion: 0.9.0
+    created: "2023-08-11T20:24:26.15333363Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      version: 2.6.0
+    description: Helmet is a library Helm Chart for grouping common logics. This chart
+      is not deployable by itself.
+    digest: 8fd4bf71a39b32b6b60a75fee86601d5f741ac92cf17a83345dd03a228237c0f
+    home: https://github.com/companyinfo/helm-charts/blob/main/charts/helmet
+    keywords:
+    - common
+    - helper
+    - template
+    - function
+    maintainers:
+    - name: Company.info Developers
+      url: https://company.info
+    name: helmet
+    type: library
+    urls:
+    - https://github.com/companyinfo/helm-charts/releases/download/helmet-0.9.0/helmet-0.9.0.tgz
+    version: 0.9.0
+  - apiVersion: v2
     appVersion: 0.8.0
     created: "2023-07-25T11:18:27.911027361Z"
     dependencies:
@@ -265,4 +289,4 @@ entries:
     urls:
     - https://github.com/companyinfo/helm-charts/releases/download/helmet-0.5.0/helmet-0.5.0.tgz
     version: 0.5.0
-generated: "2023-07-25T11:18:27.911098563Z"
+generated: "2023-08-11T20:24:26.153449633Z"
