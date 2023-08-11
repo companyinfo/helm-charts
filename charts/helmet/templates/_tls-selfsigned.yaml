@@ -2,12 +2,12 @@
 {{- if .Values.ingress.enabled }}
 {{- if and .Values.ingress.tls .Values.ingress.selfSigned (not .Values.ingress.secrets) }}
 {{- $ca := genCA "helmet-ca" 365 }}
-{{- $cert := genSignedCert .Values.ingress.hostname nil (list .Values.ingress.hostname) 365 $ca }}
+{{- $cert := genSignedCert (include "common.tplvalues.render" (dict "value" .Values.ingress.hostname "context" $) | quote) nil (list .Values.ingress.hostname) 365 $ca }}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ printf "%s-tls" .Values.ingress.hostname }}
+  name: {{ include "common.tplvalues.render" (dict "value" (printf "%s-tls" .Values.ingress.hostname) "context" $) }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     {{- if .Values.commonLabels }}
