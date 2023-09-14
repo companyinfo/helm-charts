@@ -8,3 +8,7 @@ ports:
 
 ingress:
   enabled: true
+
+envVars:
+  FOO: bar
+  BOO: far

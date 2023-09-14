@@ -330,8 +330,7 @@ In case you want to add extra environment variables (useful for advanced operati
 
 ```yaml
 envVars:
-  - name: LOG_LEVEL
-    value: error
+  LOG_LEVEL: error
 ```
 
 Alternatively, you can use a ConfigMap or a Secret with the environment variables. To do so, use the `.envVarsConfigMap` or the `envVarsSecret` properties.
