@@ -335,7 +335,7 @@ envVars:
 
 Alternatively, you can use a ConfigMap or a Secret with the environment variables. To do so, use the `.envVarsConfigMap` or the `envVarsSecret` properties.
 
-#### Migrating from previous version
+#### Migrating from version v0.x.x to v1.x.x
 
 In the previous version (v0.x.x), `envVars` was defined as an array, but in the newer version (v1.x.x), `envVars` is a map.
 Before, it wasn't possible to selectively update specific environment variables within it, as any changes would overwrite all the variables.
