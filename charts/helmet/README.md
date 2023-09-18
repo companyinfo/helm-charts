@@ -335,6 +335,28 @@ envVars:
 
 Alternatively, you can use a ConfigMap or a Secret with the environment variables. To do so, use the `.envVarsConfigMap` or the `envVarsSecret` properties.
 
+#### Migrating from previous version
+
+In the previous version (v0.9.0 and prior), `envVars` was defined as an array, but in the newer version, `envVars` is a map.
+Before, it wasn't possible to selectively update specific environment variables within it, as any changes would overwrite all the variables.
+We changed `envVars` to a map, which now provides necessary flexibility.
+
+If your `envVars` configuration looks like the following:
+```
+envVars:
+  - name: FOO
+    value: "bar"
+  - name: BOO
+    value: "far"
+```
+
+In the newer version, it has to look like this:
+```
+envVars:
+  FOO: "bar"
+  BOO: "far"
+```
+
 ### Setting Pod's affinity
 
 This chart allows you to set your custom affinity using the `affinity` parameter. Find more information about Pod's affinity in the [kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).
