@@ -9,6 +9,7 @@ ports:
 ingress:
   enabled: true
 
+# it doesn't matter if you add quotes or not, the quotes will be added in the final yaml anyway
 envVars:
-  FOO: bar
+  FOO: "bar"
   BOO: far

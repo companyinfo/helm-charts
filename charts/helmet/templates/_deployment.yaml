@@ -63,7 +63,7 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.args "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.envVars }}
-          env: {{- include "helmet.dictToArray" .Values.envVars | nindent 12 }}
+          env: {{- include "helmet.dictToArray" .Values.envVars | indent 12 }}
           {{- end }}
           {{- if or .Values.envVarsConfigMap .Values.envVarsSecret }}
           envFrom:
