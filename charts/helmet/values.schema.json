@@ -578,7 +578,7 @@
             },
             "pathType": {
               "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.HTTPIngressPath/properties/pathType",
-              "default": "ImplementationSpecific"
+              "enum": ["ImplementationSpecific", "Prefix", "Exact"]
             },
             "hostname": {
               "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.IngressRule/properties/host",
