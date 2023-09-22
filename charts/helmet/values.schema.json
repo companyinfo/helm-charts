@@ -461,7 +461,7 @@
               ]
             },
             {
-              "pattern": "(?!^$)"
+              "pattern": ".+"
             }
           ],
           "default": "Opaque"
