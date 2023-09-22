@@ -537,27 +537,30 @@
               "description": "Enable TLS configuration for the hostname defined at ingress.hostname parameter"
             },
             "extraHosts": {
-              "type": "object",
-              "required": ["name"],
-              "description": "An array with additional hostname(s) to be covered with the ingress record",
-              "properties": {
-                "name": {
-                  "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.IngressRule/properties/host",
-                  "default": "",
-                  "description": "Additional hostname",
-                  "examples": ["example.local"]
-                },
-                "path": {
-                  "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.HTTPIngressPath/properties/path",
-                  "default": "",
-                  "description": "Path for additional hostname",
-                  "examples": ["/app"]
-                },
-                "pathType": {
-                  "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.HTTPIngressPath/properties/pathType",
-                  "default": "ImplementationSpecific",
-                  "description": "Path for additional hostname",
-                  "examples": ["/app"]
+              "type": "array",
+              "default": [],
+              "items": {
+                "required": ["name"],
+                "description": "An array with additional hostname(s) to be covered with the ingress record",
+                "properties": {
+                  "name": {
+                    "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.IngressRule/properties/host",
+                    "default": "",
+                    "description": "Additional hostname",
+                    "examples": ["example.local"]
+                  },
+                  "path": {
+                    "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.HTTPIngressPath/properties/path",
+                    "default": "",
+                    "description": "Path for additional hostname",
+                    "examples": ["/app"]
+                  },
+                  "pathType": {
+                    "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.HTTPIngressPath/properties/pathType",
+                    "default": "ImplementationSpecific",
+                    "description": "Path for additional hostname",
+                    "examples": ["/app"]
+                  }
                 }
               }
             },
