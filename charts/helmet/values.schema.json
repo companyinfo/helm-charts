@@ -9,7 +9,7 @@
       "tag": "latest"
     }
   },
-  "additionalProperties": false,
+  "additionalProperties": true,
   "additionalItems": false,
   "title": "Helmet Values",
   "required": ["image"],
