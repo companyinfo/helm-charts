@@ -9,6 +9,8 @@
       "tag": "latest"
     }
   },
+  "additionalProperties": false,
+  "additionalItems": false,
   "title": "Helmet Values",
   "required": ["image"],
   "examples": [
@@ -29,6 +31,84 @@
     }
   ],
   "properties": {
+    "helmet": {
+      "type": "object"
+    },
+    "global": {
+      "type": "object",
+      "properties": {
+        "imageRegistry": {
+          "type": "string",
+          "default": "\"\"",
+          "description": "Global Docker image registry"
+        },
+        "imagePullSecrets": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/imagePullSecrets",
+          "description": "Global Docker registry secret names as an array"
+        },
+        "storageClass": {
+          "type": "string",
+          "description": "Global StorageClass for Persistent Volume(s)"
+        }
+      }
+    },
+    "kubeVersion": {
+      "type": "string",
+      "default": "\"\"",
+      "description": "Force target Kubernetes version (using Helm capabilities if not set)"
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "String to partially override common.names.fullname template with a string (will maintain the release name)",
+      "default": ""
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "description": "String to fully override common.names.fullname template with a string",
+      "default": ""
+    },
+    "namespaceOverride": {
+      "type": "string",
+      "description": "String to fully override common.names.namespace template with a string",
+      "default": ""
+    },
+    "clusterDomain": {
+      "type": "string",
+      "description": "Kubernetes Cluster Domain name",
+      "default": "cluster.local"
+    },
+    "annotations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Additional annotations to be added to the App Deployment or Statefulset. Evaluated as a template",
+      "default": {}
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Additional labels to be added to the App Deployment or Statefulset. Evaluated as a template",
+      "default": {}
+    },
+    "commonLabels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Labels to be added to all deployed resources",
+      "default": {}
+    },
+    "commonAnnotations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Annotations to be added to all deployed resources",
+      "default": {}
+    },
     "image": {
       "type": "object",
       "default": {
@@ -289,6 +369,7 @@
         {
           "type": "object",
           "additionalProperties": false,
+          "additionalItems": false,
           "description": "Should be an array. This is just a workaround for an incorrect type from helmet's default values",
           "properties": {}
         }
