@@ -70,35 +70,9 @@
           "title": "Image pull policy, Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'"
         },
         "pullSecrets": {
-          "type": "array",
           "default": [],
           "title": "Image pull secrets, specify an array of imagePullSecrets (secrets must be manually created in the namespace)",
-          "items": {
-            "type": "object",
-            "default": { "name": "" },
-            "title": "LocalObjectReference",
-            "required": ["name"],
-            "properties": {
-              "name": {
-                "type": "string",
-                "default": "",
-                "title": "Name of the referent.",
-                "examples": ["my-image-pull-secret"]
-              }
-            },
-            "examples": [
-              {
-                "name": "my-image-pull-secret"
-              }
-            ]
-          },
-          "examples": [
-            [
-              {
-                "name": "my-image-pull-secret"
-              }
-            ]
-          ]
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/imagePullSecrets"
         }
       },
       "examples": [
