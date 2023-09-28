@@ -743,3 +743,29 @@ exports:
       ## @param serviceAccount.labels Additional custom labels for the ServiceAccount
       ##
       labels: {}
+
+    ## Persistent Volume Claim for services
+    ## Ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+    ##
+    persistence:
+      ## @param persistence.enabled
+      ##
+      enabled: false
+
+      ## @param accessModes
+      ## Ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
+      ## Options: ReadWriteOnce, ReadOnlyMany, ReadWriteMany, or ReadWriteOncePod
+      accessModes:
+        - ReadWriteOnce
+
+      ## @param storageClass
+      ## Ref: https://kubernetes.io/docs/concepts/storage/storage-classes/
+      ## Options: io1, gp2, sc1, or st1
+      storageClass: gp2
+
+      ## @param resources Storage size
+      ## e.g:
+      ## resources:
+      ##   requests:
+      ##     storage: 1Gi
+      resources: {}
