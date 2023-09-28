@@ -8,3 +8,36 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+Render an array of env variables. The input can be a map or a slice.
+Values can be templates using the "common.tplvalues.render" helper, but changes to scope are not processed.
+Usage:
+{{ include "helmet.toEnvArray" ( dict "envVars" .Values.envVars "context" $ ) }}
+*/}}
+{{- define "helmet.toEnvArray" -}}
+{{- if kindIs "map" .envVars }}
+{{- range $key, $val := .envVars }}
+- name: {{ $key }}
+{{- if kindIs "string" $val }}
+  value: {{ include "common.tplvalues.render" (dict "value" $val "context" $.context) }}
+{{- else if kindIs "map" $val }}
+{{- if $val.value }}
+  value: {{ include "common.tplvalues.render" (dict "value" $val.value "context" $.context) }}
+{{- else if $val.valueFrom }}
+  valueFrom: {{ include "common.tplvalues.render" (dict "value" $val.valueFrom "context" $.context) | nindent 4 }}
+{{- end }}
+{{- end -}}
+{{- end -}}
+{{- else if kindIs "slice" .envVars }}
+{{- range $val := .envVars }}
+- name: {{ $val.name }}
+{{- if $val.value }}
+  value: {{ include "common.tplvalues.render" (dict "value" $val.value "context" $.context) }}
+{{- else if $val.valueFrom }}
+  valueFrom: {{ include "common.tplvalues.render" (dict "value" $val.valueFrom "context" $.context) | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end -}}
