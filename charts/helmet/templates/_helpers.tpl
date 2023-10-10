@@ -31,13 +31,6 @@ Usage:
 {{- end -}}
 {{- end -}}
 {{- else if kindIs "slice" .envVars }}
-{{- range $val := .envVars }}
-- name: {{ $val.name }}
-{{- if $val.value }}
-  value: {{ include "common.tplvalues.render" (dict "value" $val.value "context" $.context) }}
-{{- else if $val.valueFrom }}
-  valueFrom: {{ include "common.tplvalues.render" (dict "value" $val.valueFrom "context" $.context) | nindent 4 }}
-{{- end }}
-{{- end }}
+{{ include "common.tplvalues.render" (dict "value" .envVars "context" $.context) }}
 {{- end }}
 {{- end -}}
