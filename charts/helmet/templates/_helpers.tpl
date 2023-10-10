@@ -23,11 +23,7 @@ Usage:
 {{- if kindIs "string" $val }}
   value: {{ include "common.tplvalues.render" (dict "value" $val "context" $.context) }}
 {{- else if kindIs "map" $val }}
-{{- if $val.value }}
-  value: {{ include "common.tplvalues.render" (dict "value" $val.value "context" $.context) }}
-{{- else if $val.valueFrom }}
-  valueFrom: {{ include "common.tplvalues.render" (dict "value" $val.valueFrom "context" $.context) | nindent 4 }}
-{{- end }}
+{{ include "common.tplvalues.render" (dict "value" (omit $val "name") "context" $.context) | indent 2 }}
 {{- end -}}
 {{- end -}}
 {{- else if kindIs "slice" .envVars }}
