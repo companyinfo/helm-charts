@@ -149,7 +149,7 @@ $ helm install nginx .
 | `initContainers`                        | Add additional init containers to the APP pod(s)                                                                         | `[]`                                                             |
 | `command`                               | Override main container's command                                                                                        | `[]`                                                             |
 | `args`                                  | Override main container's args                                                                                           | `[]`                                                             |
-| `envVars`                               | Environment variables to be set on APP container                                                                         | `[]`                                                             |
+| `envVars`                               | Environment variables to be set on APP container                                                                         | `{} or []`                                                             |
 | `envVarsConfigMap`                      | ConfigMap with environment variables                                                                                     | `""`                                                             |
 | `envVarsSecret`                         | Secret with environment variables                                                                                        | `""`                                                             |
 

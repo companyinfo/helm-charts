@@ -63,7 +63,7 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.args "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.envVars }}
-          env: {{- include "common.tplvalues.render" (dict "value" .Values.envVars "context" $) | nindent 12 }}
+          env: {{- include "helmet.toEnvArray" (dict "envVars" .Values.envVars "context" $) | indent 12 }}
           {{- end }}
           {{- if or .Values.envVarsConfigMap .Values.envVarsSecret }}
           envFrom:
@@ -121,7 +121,7 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
-      {{- include "common.images.pullSecrets" (dict "images" (list .Values.image) "global" .Values.global) | indent 6 }}
+      {{- include "common.images.renderPullSecrets" (dict "images" (list .Values.image) "context" $) | indent 6 }}
       {{- if .Values.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}
       {{- end }}

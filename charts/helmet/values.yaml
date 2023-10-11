@@ -402,10 +402,12 @@ exports:
     ## @param envVars Environment variables to be set on APP container
     ## Example:
     ## envVars:
-    ##   - name: FOO
-    ##     value: "bar"
+    ##   FOO: "foo"
+    ##   BAZ:
+    ##     valueFrom:
+    ##       configMapRef: ...
     ##
-    envVars: []
+    envVars: null
 
     ## @param envVarsConfigMap ConfigMap with environment variables
     ##
