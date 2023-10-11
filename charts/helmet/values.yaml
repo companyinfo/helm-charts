@@ -403,8 +403,6 @@ exports:
     ## Example:
     ## envVars:
     ##   FOO: "foo"
-    ##   BAR:
-    ##     value: "bar"
     ##   BAZ:
     ##     valueFrom:
     ##       configMapRef: ...
