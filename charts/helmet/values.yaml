@@ -720,6 +720,56 @@ exports:
       ##
       path: "/metrics"
 
+    ## Prometheus Operator PodMonitor configuration
+    ##
+    podMonitor:
+      ## @param podMonitor.enabled - Whether or not the PodMonitor should be created.
+      ##
+      enabled: false
+
+      ## @param podMonitor.namespace Namespace in which Prometheus is running
+      ##
+      namespace: ""
+
+      ## @param podMonitor.jobLabel Namespace in which Prometheus is running
+      ##
+      jobLabel: ""
+
+      #@param podMonitor.port The port where metrics should be scraped.
+      port: "http"
+
+      ## @param podMonitor.path The path where metrics are exposed.
+      ##
+      path: "/metrics"
+
+      ## @param podMonitor.interval Scrape interval. Prometheus default used if not set.
+      ##
+      interval: "30s"
+
+      ## @param podMonitor.scrapeTimeout The timeout duration after which the scrape is ended.
+      ##
+      scrapeTimeout: "10s"
+
+      ## @param podMonitor.labels Additional PodMonitor labels (evaluated as a template)
+      ##
+      labels: {}
+
+      ## @param podMonitor.relabelings [array] Specify general relabeling
+      ##
+      relabelings: {}
+
+      ## @param podMonitor.metricRelabelings [array] Specify additional relabeling of metrics
+      ##
+      metricRelabelings: []
+
+      ## @param podMonitor.namespaceSelector is a selector for selecting either all namespaces or a list of namespaces.
+      ##
+      namespaceSelector: {}
+
+      ## @param podMonitor.selector is a selector to select which pods will be monitored.
+      ##
+      selector: {}
+
     ## Service account for APP pods to use.
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
     ##
