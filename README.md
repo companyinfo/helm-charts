@@ -4,7 +4,7 @@ Company.info Helm charts repository.
 ## TL;DR
 
 ```bash
-$ helm repo add companyinfo https://companyinfo.github.io/helm-charts
+$ helm repo add companyinfo https://charts.companyinfo.dev
 $ helm search repo companyinfo
 $ helm install my-release companyinfo/<chart>
 ```
@@ -27,7 +27,7 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 The following command allows you to download and install all the charts from this repository:
 
 ```bash
-$ helm repo add companyinfo https://companyinfo.github.io/helm-charts
+$ helm repo add companyinfo https://charts.companyinfo.dev
 ```
 
 ### Using Helm
