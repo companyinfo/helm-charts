@@ -19,9 +19,9 @@ Usage:
 {{- define "helmet.toEnvArray" -}}
 {{- if kindIs "map" .envVars }}
 {{- range $key, $val := .envVars }}
-- name: {{ $key }}
+- name: {{ $key | quote }}
 {{- if kindIs "string" $val }}
-  value: {{ include "common.tplvalues.render" (dict "value" $val "context" $.context) }}
+  value: {{ (include "common.tplvalues.render" (dict "value" $val "context" $.context)) | quote }}
 {{- else if kindIs "map" $val }}
 {{ include "common.tplvalues.render" (dict "value" (omit $val "name") "context" $.context) | indent 2 }}
 {{- end -}}

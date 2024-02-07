@@ -3,8 +3,8 @@ name: helmet
 description: Helmet is a library Helm Chart for grouping common logics. This chart is not deployable by itself.
 home: https://github.com/companyinfo/helm-charts/blob/main/charts/helmet
 type: library
-version: "0.11.0"
-appVersion: "0.11.0"
+version: "0.11.1"
+appVersion: "0.11.1"
 keywords:
   - common
   - helper
