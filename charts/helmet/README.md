@@ -95,6 +95,11 @@ $ helm install nginx .
 | `commonAnnotations` | Annotations to be added to all deployed resources                                                          | `{}`              |
 
 
+### Application Type
+| Name                | Description                                                                                                  | Value        |
+|---------------------|--------------------------------------------------------------------------------------------------------------|--------------|
+| `kind`              | Deployment or StatefulSet                                                                                    | `Deployment` |
+
 ### Image parameters
 
 | Name                | Description                                                                                                  | Value       |
