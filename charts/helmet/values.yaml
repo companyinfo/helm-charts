@@ -58,6 +58,9 @@ exports:
 
     ## @section Helmet parameters
 
+    ## Helmet (App) kind of application (Deployment or StatefulSet)
+    kind: Deployment
+
     ## Helmet (App) image version
     ## ref: https://kubernetes.io/docs/concepts/containers/images
     ## @param image.registry Image registry
@@ -366,6 +369,10 @@ exports:
     ##     mountPath: "/app/config"
     ##
     extraVolumeMounts: []
+
+    ## @param worker.extraVolumeClaimTemplates Optionally specify extra list of volumesClaimTemplates, applicable only if using StatefulSet
+    ##
+    extraVolumeClaimTemplates: []
 
     ## @param sidecars Add additional sidecar containers to the APP pods
     ## Example:

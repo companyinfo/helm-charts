@@ -3,8 +3,12 @@
 {{ include "helmet.configmap" . }}
 {{- end }}
 
-{{- if .Values.image.repository }}
+{{- if and .Values.image.repository (eq .Values.kind "Deployment") }}
 {{ include "helmet.deployment" . }}
+{{- end }}
+
+{{- if and .Values.image.repository (eq .Values.kind "StatefulSet") }}
+{{ include "helmet.statefulset" . }}
 {{- end }}
 
 {{ include "helmet.hpa" . }}
