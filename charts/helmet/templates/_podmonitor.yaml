@@ -10,15 +10,11 @@ metadata:
   {{- else }}
   namespace: {{ include "common.names.namespace" . | quote }}
   {{- end }}
-  labels: {{- include "common.labels.standard" . | nindent 4 }}
-    {{- if .Values.podMonitor.labels }}
-    {{- include "common.tplvalues.render" (dict "value" .Values.podMonitor.labels "context" $) | nindent 4 }}
-    {{- end }}
-    {{- if .Values.commonLabels }}
-    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
-    {{- end }}
-  {{- if .Values.commonAnnotations }}
-  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- $labels := include "common.tplvalues.merge" (dict "values" .Values.podMonitor.labels .Values.commonLabels "context" .) | fromYaml }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" $labels "context" $ ) | nindent 4 }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" .Values.podMonitor.annotations .Values.commonAnnotations "context" .) | fromYaml }}
+  {{- if $annotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
   {{- if .Values.podMonitor.jobLabel }}

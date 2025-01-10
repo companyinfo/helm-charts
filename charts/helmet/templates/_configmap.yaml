@@ -5,21 +5,11 @@ kind: ConfigMap
 metadata:
   name: {{ include "common.names.fullname" . }}
   namespace: {{ include "common.names.namespace" . | quote }}
-  labels: {{- include "common.labels.standard" . | nindent 4 }}
-    {{- if .Values.commonLabels }}
-    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
-    {{- end }}
-    {{- if .Values.configMap.labels }}
-    {{- include "common.tplvalues.render" ( dict "value" .Values.configMap.labels "context" $ ) | nindent 4 }}
-    {{- end }}
-  {{- if or .Values.configMap.annotations .Values.commonAnnotations }}
-  annotations:
-    {{- if .Values.configMap.annotations }}
-    {{- include "common.tplvalues.render" ( dict "value" .Values.configMap.annotations "context" $ ) | nindent 4 }}
-    {{- end }}
-    {{- if .Values.commonAnnotations }}
-    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
-    {{- end }}
+  {{- $labels := include "common.tplvalues.merge" (dict "values" .Values.configMap.labels .Values.commonLabels "context" .) | fromYaml }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" $labels "context" $ ) | nindent 4 }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" .Values.configMap.annotations .Values.commonAnnotations "context" .) | fromYaml }}
+  {{- if $annotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
   {{- end }}
 {{- if .Values.configMap.data }}
 data:
