@@ -22,7 +22,7 @@ dependency on what we call the `Helmet` library.
 
 ## Prerequisites
 
-- Kubernetes 1.19+
+- Kubernetes 1.23+
 - Helm 3.9.0+
 
 ## Getting started
@@ -32,8 +32,8 @@ dependency on what we call the `Helmet` library.
 
 dependencies:
   - name: helmet
-    version: 0.6.5
-    repository: https://companyinfo.github.io/helm-charts
+    version: 0.12.0
+    repository: https://charts.companyinfo.dev
     import-values: # <== It is mandatory if you want to import the Helmet default values.
       - defaults
 ```

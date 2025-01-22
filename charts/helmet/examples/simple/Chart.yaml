@@ -12,6 +12,6 @@ maintainers:
 dependencies:
   - name: helmet
     version: ^0
-    repository: https://companyinfo.github.io/helm-charts
+    repository: https://charts.companyinfo.dev
     import-values:
       - defaults
