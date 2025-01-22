@@ -25,5 +25,6 @@
 
 {{ include "helmet.serviceaccount" . }}
 {{ include "helmet.servicemonitor" . }}
+{{ include "helmet.cronjob" . }}
 {{ include "helmet.podmonitor" . }}
 {{- end }}

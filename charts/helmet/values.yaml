@@ -853,3 +853,84 @@ exports:
       ## @param serviceAccount.labels Additional custom labels for the ServiceAccount
       ##
       labels: {}
+
+    ## Cronjob: create jobs on a repeated schedule
+    ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+    ##
+    cronjob:
+      ## @param cronjob.enabled
+      ##
+      enabled: false
+
+      ## @param cronjob.concurrencyPolicy Allow/Forbid/Replace concurrency
+      ##
+      concurrencyPolicy: Allow
+
+      ## @param cronjob.schedule run schedule for the cronjob
+      ## Cron format: "<minute> <hour> <day_of_month> <month> <day_of_week>"
+      ##
+      schedule: ""
+
+      ## @param cronjob.successfulJobsHistoryLimit
+      ##
+      successfulJobsHistoryLimit: 3
+
+      ## @param nodeSelector Node labels for pod assignment.
+      ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+      ##
+      nodeSelector: {}
+
+      ## @param tolerations Tolerations for pod assignment.
+      ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+      ##
+      tolerations: []
+
+      ## @param restartPolicy Restart conditions
+      ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy
+      ##
+      restartPolicy: OnFailure
+
+      ## Configure APP pods Security Context
+      ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+      ## @param podSecurityContext.enabled Enabled APP pods' Security Context
+      ## @param podSecurityContext.fsGroup Set APP pod's Security Context fsGroup
+      ##
+      podSecurityContext:
+        enabled: false
+        fsGroup: 0
+
+      ## @param initContainers Add additional init containers to the APP pods
+      ## Example:
+      ## initContainers:
+      ##   - name: your-image-name
+      ##     image: your-image
+      ##     imagePullPolicy: Always
+      ##     ports:
+      ##       - name: portname
+      ##         containerPort: 1234
+      ##
+      initContainers: []
+
+      ## @param containers Add additional containers to the APP pods
+      ## Example:
+      ## containers:
+      ##   - name: your-image-name
+      ##     image: your-image
+      ##     imagePullPolicy: Always
+      ##     ports:
+      ##       - name: portname
+      ##         containerPort: 1234
+      ##
+      containers: []
+
+      ## @param volumes Array to add volumes (evaluated as a template)
+      ## Example:
+      ## volumes:
+      ##   - name: vol-conf
+      ##     configMap:
+      ##       name: "configmap-name"
+      ##   - name: vol-secret
+      ##     secret:
+      ##       secretName: "secret-name"
+      ##
+      volumes: []
