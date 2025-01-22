@@ -22,7 +22,7 @@ dependency on what we call the `Helmet` library.
 
 ## Prerequisites
 
-- Kubernetes 1.19+
+- Kubernetes 1.23+
 - Helm 3.9.0+
 
 ## Getting started
@@ -32,8 +32,8 @@ dependency on what we call the `Helmet` library.
 
 dependencies:
   - name: helmet
-    version: 0.6.5
-    repository: https://companyinfo.github.io/helm-charts
+    version: 0.12.0
+    repository: https://charts.companyinfo.dev
     import-values: # <== It is mandatory if you want to import the Helmet default values.
       - defaults
 ```
@@ -149,7 +149,7 @@ $ helm install nginx .
 | `initContainers`                        | Add additional init containers to the APP pod(s)                                                                         | `[]`                                                             |
 | `command`                               | Override main container's command                                                                                        | `[]`                                                             |
 | `args`                                  | Override main container's args                                                                                           | `[]`                                                             |
-| `envVars`                               | Environment variables to be set on APP container                                                                         | `[]`                                                             |
+| `envVars`                               | Environment variables to be set on APP container                                                                         | `{} or []`                                                             |
 | `envVarsConfigMap`                      | ConfigMap with environment variables                                                                                     | `""`                                                             |
 | `envVarsSecret`                         | Secret with environment variables                                                                                        | `""`                                                             |
 
@@ -243,6 +243,24 @@ $ helm install nginx .
 | `serviceMonitor.port`              | The port used by ServiceMonitor                                                                 | `http`    |
 | `serviceMonitor.path`              | The path used by ServiceMonitor                                                                 | `metrics` |
 
+### Prometheus Operator PodMonitor parameters
+
+| Name                               | Description                                                                                     | Value     |
+|------------------------------------|-------------------------------------------------------------------------------------------------|-----------|
+| `podMonitor.enabled`           | Specify if a PodMonitor will be deployed for Prometheus Operator                                     | `false`   |
+| `podMonitor.namespace`         | Namespace in which Prometheus is running                                                             | `""`      |
+| `podMonitor.labels`            | Additional PodMonitor labels (evaluated as a template)                                               | `{}`      |
+| `podMonitor.annotations`       | Additional PodMonitor annotations (evaluated as a template)                                          | `{}`      |
+| `podMonitor.jobLabel`          | The name of the label on the target service to use as the job name in Prometheus                     | `""`      |
+| `podMonitor.honorLabels`       | The honorLabels chooses the metric's labels on collisions with target labels                         | `false`   |
+| `podMonitor.interval`          | How frequently to scrape metrics                                                                     | `""`      |
+| `podMonitor.scrapeTimeout`     | Timeout after which the scrape is ended                                                              | `""`      |
+| `podMonitor.metricRelabelings` | Specify additional relabeling of metrics                                                             | `[]`      |
+| `podMonitor.relabelings`       | Specify general relabeling                                                                           | `[]`      |
+| `podMonitor.selector`          | Prometheus instance selector labels                                                                  | `{}`      |
+| `podMonitor.namespaceSelector` | The namespaceSelector is a selector for selecting either all namespaces or a list of namespaces      | `{}`      |
+| `podMonitor.port`              | The port used by PodMonitor                                                                          | `http`    |
+| `podMonitor.path`              | The path used by PodMonitor                                                                          | `metrics` |
 
 ### ServiceAccount parameters
 

@@ -8,9 +8,10 @@ appVersion: "0.1.0"
 maintainers:
   - name: Company.info Developers
     url: https://company.info
+
 dependencies:
   - name: helmet
-    version: 0.4.5
-    repository: https://nexus.ci.fdmg.org/repository/helm-repo
+    version: ^0
+    repository: https://charts.companyinfo.dev
     import-values:
       - defaults

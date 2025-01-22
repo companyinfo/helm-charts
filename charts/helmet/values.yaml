@@ -16,7 +16,19 @@ exports:
       ##   - myRegistryKeySecretName
       ##
       imagePullSecrets: []
-      storageClass: ""
+      defaultStorageClass: ""
+      ## Compatibility adaptations for Kubernetes platforms
+      ##
+      compatibility:
+        ## Compatibility adaptations for Openshift
+        ##
+        openshift:
+          ## @param global.compatibility.openshift.adaptSecurityContext Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation)
+          ##
+          adaptSecurityContext: auto
+        ## @param global.compatibility.omitEmptySeLinuxOptions If set to true, removes the seLinuxOptions from the securityContexts when it is set to an empty object
+        ##
+        omitEmptySeLinuxOptions: false
 
     ## @section Common parameters
 
@@ -77,7 +89,7 @@ exports:
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
       ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
       ##
-      pullPolicy: Always
+      pullPolicy: null
 
       ## Optionally specify an array of imagePullSecrets (secrets must be manually created in the namespace)
       ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -323,7 +335,7 @@ exports:
     ## @param topologySpreadConstraints Topology Spread Constraints for pod assignment spread across your cluster among failure-domains. Evaluated as a template
     ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
     ##
-    topologySpreadConstraints: {}
+    topologySpreadConstraints: []
 
     ## @param priorityClassName Priority Class Name
     ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
@@ -402,10 +414,12 @@ exports:
     ## @param envVars Environment variables to be set on APP container
     ## Example:
     ## envVars:
-    ##   - name: FOO
-    ##     value: "bar"
+    ##   FOO: "foo"
+    ##   BAZ:
+    ##     valueFrom:
+    ##       configMapRef: ...
     ##
-    envVars: []
+    envVars: null
 
     ## @param envVarsConfigMap ConfigMap with environment variables
     ##
@@ -605,6 +619,52 @@ exports:
       ##
       extraRules: []
 
+    ## Enable persistence using Persistent Volume Claims
+    ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+    ##
+    persistence:
+      ## @param persistence.enabled Enable persistence using Persistent Volume Claims
+      ##
+      enabled: false
+      ## @param persistence.mountPath Path to mount the volume at.
+      ##
+      mountPath: /data
+      ## @param persistence.subPath The subdirectory of the volume to mount to, useful in dev environments and one PV for multiple services
+      ##
+      subPath: ""
+      ## @param persistence.storageClass Storage class of backing PVC
+      ## If defined, storageClassName: <storageClass>
+      ## If set to "-", storageClassName: "", which disables dynamic provisioning
+      ## If undefined (the default) or set to null, no storageClassName spec is
+      ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+      ##   GKE, AWS & OpenStack)
+      ##
+      storageClass: ""
+      ## @param persistence.annotations Persistent Volume Claim annotations
+      ##
+      annotations: {}
+      ## @param persistence.accessModes Persistent Volume Access Modes
+      ##
+      accessModes:
+        - ReadWriteOnce
+      ## @param persistence.size Size of data volume
+      ##
+      size: 8Gi
+      ## @param persistence.existingClaim The name of an existing PVC to use for persistence
+      ##
+      existingClaim: ""
+      ## @param persistence.selector Selector to match an existing Persistent Volume for WordPress data PVC
+      ## If set, the PVC can't have a PV dynamically provisioned for it
+      ## E.g.
+      ## selector:
+      ##   matchLabels:
+      ##     app: my-app
+      ##
+      selector: {}
+      ## @param persistence.dataSource Custom PVC data source
+      ##
+      dataSource: {}
+
     ## APP service parameters
     ##
     service:
@@ -717,6 +777,56 @@ exports:
       ## @param serviceMonitor.path path used by serviceMonitor
       ##
       path: "/metrics"
+
+    ## Prometheus Operator PodMonitor configuration
+    ##
+    podMonitor:
+      ## @param podMonitor.enabled - Whether or not the PodMonitor should be created.
+      ##
+      enabled: false
+
+      ## @param podMonitor.namespace Namespace in which Prometheus is running
+      ##
+      namespace: ""
+
+      ## @param podMonitor.jobLabel Namespace in which Prometheus is running
+      ##
+      jobLabel: ""
+
+      #@param podMonitor.port The port where metrics should be scraped.
+      port: "http"
+
+      ## @param podMonitor.path The path where metrics are exposed.
+      ##
+      path: "/metrics"
+
+      ## @param podMonitor.interval Scrape interval. Prometheus default used if not set.
+      ##
+      interval: "30s"
+
+      ## @param podMonitor.scrapeTimeout The timeout duration after which the scrape is ended.
+      ##
+      scrapeTimeout: "10s"
+
+      ## @param podMonitor.labels Additional PodMonitor labels (evaluated as a template)
+      ##
+      labels: {}
+
+      ## @param podMonitor.relabelings [array] Specify general relabeling
+      ##
+      relabelings: {}
+
+      ## @param podMonitor.metricRelabelings [array] Specify additional relabeling of metrics
+      ##
+      metricRelabelings: []
+
+      ## @param podMonitor.namespaceSelector is a selector for selecting either all namespaces or a list of namespaces.
+      ##
+      namespaceSelector: {}
+
+      ## @param podMonitor.selector is a selector to select which pods will be monitored.
+      ##
+      selector: {}
 
     ## Service account for APP pods to use.
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
