@@ -5,9 +5,9 @@ kind: Deployment
 metadata:
   name: {{ include "common.names.fullname" . }}
   namespace: {{ include "common.names.namespace" . | quote }}
-  {{- $labels := include "common.tplvalues.merge" (dict "values" .Values.labels .Values.commonLabels "context" .) | fromYaml }}
+  {{- $labels := include "common.tplvalues.merge" (dict "values" (list .Values.labels .Values.commonLabels) "context" .) | fromYaml }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" $labels "context" $ ) | nindent 4 }}
-  {{- $annotations := include "common.tplvalues.merge" (dict "values" .Values.annotations .Values.commonAnnotations "context" .) | fromYaml }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.annotations .Values.commonAnnotations) "context" .) | fromYaml }}
   {{- if $annotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
   {{- end }}
@@ -16,7 +16,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
-  {{- $podLabels := include "common.tplvalues.merge" (dict "values" .Values.podLabels .Values.commonLabels "context" .) | fromYaml }}
+  {{- $podLabels := include "common.tplvalues.merge" (dict "values" (list .Values.podLabels .Values.commonLabels) "context" .) | fromYaml }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
   {{- if .Values.updateStrategy }}

@@ -10,9 +10,9 @@ metadata:
   {{- else }}
   namespace: {{ include "common.names.namespace" . | quote }}
   {{- end }}
-  {{- $labels := include "common.tplvalues.merge" (dict "values" .Values.serviceMonitor.labels .Values.commonLabels "context" .) | fromYaml }}
+  {{- $labels := include "common.tplvalues.merge" (dict "values" (list .Values.serviceMonitor.labels .Values.commonLabels) "context" .) | fromYaml }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" $labels "context" $ ) | nindent 4 }}
-  {{- $annotations := include "common.tplvalues.merge" (dict "values" .Values.serviceMonitor.annotations .Values.commonAnnotations "context" .) | fromYaml }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.serviceMonitor.annotations .Values.commonAnnotations) "context" .) | fromYaml }}
   {{- if $annotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
   {{- end }}
