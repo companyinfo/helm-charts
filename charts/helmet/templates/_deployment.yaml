@@ -28,7 +28,12 @@ spec:
       {{- if .Values.podAnnotations }}
       {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
       {{- end }}
-        helm.sh/revision: {{ .Release.Revision | quote }}
+        {{- if .Values.configMap.data }}
+        checksum/configMap: {{ include "helmet.configmap" . | sha256sum }}
+        {{- end }}
+        {{- if or .Values.secret.data .Values.secret.stringData }}
+        checksum/secret: {{ include "helmet.secret" . | sha256sum }}
+        {{- end }}
       labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
     spec:
       {{- if .Values.initContainers }}
