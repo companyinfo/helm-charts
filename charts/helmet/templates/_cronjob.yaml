@@ -23,7 +23,7 @@ spec:
           annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.cronjob.podAnnotations "context" $) | nindent 12 }}
           {{- end }}
         spec:
-          {{- include "common.images.pullSecrets" (dict "images" (list .Values.image) "global" .Values.global) | indent 10 }}
+          {{- include "common.images.renderPullSecrets" (dict "images" (list .Values.image) "context" $) | nindent 10 }}
           {{- if and .Values.cronjob.nodeSelector .Values.nodeSelector }}
           nodeSelector: {{- default (toYaml .Values.nodeSelector) (toYaml .Values.cronjob.nodeSelector) | nindent 12  }}
           {{- end }}
