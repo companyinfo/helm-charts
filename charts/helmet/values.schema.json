@@ -1,0 +1,942 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://company.info/helmet.values.json",
+  "type": "object",
+  "default": {
+    "image": {
+      "registry": "\"\"",
+      "repository": "\"\"",
+      "tag": "latest"
+    }
+  },
+  "additionalProperties": true,
+  "additionalItems": false,
+  "title": "Helmet Values",
+  "required": ["image"],
+  "examples": [
+    {
+      "image": {
+        "repository": "nginx"
+      },
+      "ports": [
+        {
+          "name": "http",
+          "containerPort": 80,
+          "protocol": "TCP"
+        }
+      ],
+      "ingress": {
+        "enabled": true
+      }
+    }
+  ],
+  "properties": {
+    "helmet": {
+      "type": "object"
+    },
+    "global": {
+      "type": "object",
+      "properties": {
+        "imageRegistry": {
+          "type": "string",
+          "default": "\"\"",
+          "description": "Global Docker image registry"
+        },
+        "imagePullSecrets": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/imagePullSecrets",
+          "description": "Global Docker registry secret names as an array"
+        },
+        "storageClass": {
+          "type": "string",
+          "description": "Global StorageClass for Persistent Volume(s)"
+        }
+      }
+    },
+    "kubeVersion": {
+      "type": "string",
+      "default": "\"\"",
+      "description": "Force target Kubernetes version (using Helm capabilities if not set)"
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "String to partially override common.names.fullname template with a string (will maintain the release name)",
+      "default": ""
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "description": "String to fully override common.names.fullname template with a string",
+      "default": ""
+    },
+    "namespaceOverride": {
+      "type": "string",
+      "description": "String to fully override common.names.namespace template with a string",
+      "default": ""
+    },
+    "clusterDomain": {
+      "type": "string",
+      "description": "Kubernetes Cluster Domain name",
+      "default": "cluster.local"
+    },
+    "annotations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Additional annotations to be added to the App Deployment or Statefulset. Evaluated as a template",
+      "default": {}
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Additional labels to be added to the App Deployment or Statefulset. Evaluated as a template",
+      "default": {}
+    },
+    "commonLabels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Labels to be added to all deployed resources",
+      "default": {}
+    },
+    "commonAnnotations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Annotations to be added to all deployed resources",
+      "default": {}
+    },
+    "image": {
+      "type": "object",
+      "default": {
+        "registry": "\"\"",
+        "repository": "\"\"",
+        "tag": "latest"
+      },
+      "title": "Required image parameters",
+      "required": ["repository"],
+      "properties": {
+        "registry": {
+          "type": "string",
+          "default": "\"\"",
+          "title": "Image registry",
+          "examples": ["docker.io", "quay.io", "gcr.io", "ghcr.io"]
+        },
+        "repository": {
+          "type": "string",
+          "default": "\"\"",
+          "title": "Image repository",
+          "examples": ["nginx"]
+        },
+        "tag": {
+          "type": "string",
+          "default": "latest",
+          "title": "Image tag (immutable tags are recommended)",
+          "examples": ["latest"]
+        },
+        "digest": {
+          "type": "string",
+          "default": "",
+          "title": "Image digest. Please note this parameter, if set, will override the tag",
+          "examples": ["sha256:aa...."]
+        },
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"],
+          "default": "Always",
+          "title": "Image pull policy, Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'"
+        },
+        "pullSecrets": {
+          "default": [],
+          "title": "Image pull secrets, specify an array of imagePullSecrets (secrets must be manually created in the namespace)",
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/imagePullSecrets"
+        }
+      },
+      "examples": [
+        {
+          "registry": "docker.io",
+          "repository": "nginx",
+          "tag": "latest"
+        }
+      ]
+    },
+    "replicaCount": {
+      "default": 1,
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.apps.v1.DeploymentSpec/properties/replicas"
+    },
+    "revisionHistoryLimit": {
+      "default": 10,
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.apps.v1.DeploymentSpec/properties/revisionHistoryLimit"
+    },
+    "ports": {
+      "type": "array",
+      "default": [],
+      "title": "List of ports to expose from the container",
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ContainerPort"
+      }
+    },
+    "livenessProbe": {
+      "default": {
+        "enabled": false
+      },
+      "allOf": [
+        {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Probe"
+        },
+        {
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable livenessProbe on APP container (only main container)"
+            }
+          }
+        }
+      ]
+    },
+    "readinessProbe": {
+      "default": {
+        "enabled": false
+      },
+      "allOf": [
+        {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Probe"
+        },
+        {
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable readinessProbe on APP container (only main container)"
+            }
+          }
+        }
+      ]
+    },
+    "startupProbe": {
+      "default": {
+        "enabled": false
+      },
+      "allOf": [
+        {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Probe"
+        },
+        {
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable startupProbe on APP container (only main container)"
+            }
+          }
+        }
+      ]
+    },
+    "podRestartPolicy": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/restartPolicy",
+      "enum": ["Always", "OnFailure", "Never"],
+      "default": "Always"
+    },
+    "podSecurityContext": {
+      "default": {
+        "enabled": false
+      },
+      "allOf": [
+        {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSecurityContext"
+        },
+        {
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enabled APP pods' Security Context"
+            }
+          }
+        }
+      ]
+    },
+    "containerSecurityContext": {
+      "default": {
+        "enabled": false
+      },
+      "allOf": [
+        {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.SecurityContext"
+        },
+        {
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enabled APP containers' Security Context"
+            }
+          }
+        }
+      ]
+    },
+    "lifecycleHooks": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Lifecycle",
+      "description": "for the APP main container to automate configuration before or after startup"
+    },
+    "resources": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ResourceRequirements",
+      "examples": [
+        {
+          "requests": {
+            "cpu": "100m",
+            "memory": "128Mi"
+          },
+          "limits": {
+            "cpu": "200m",
+            "memory": "256Mi"
+          }
+        }
+      ]
+    },
+    "hostAliases": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/hostAliases"
+    },
+    "podLabels": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+    },
+    "podAnnotations": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+    },
+    "podAffinityPreset": {
+      "description": "Pod affinity preset. Ignored if affinity is set. Allowed values: soft or hard",
+      "type": "string",
+      "enum": ["soft", "hard", ""],
+      "default": "\"\""
+    },
+    "podAntiAffinityPreset": {
+      "description": "Pod anti-affinity preset. Ignored if affinity is set. Allowed values: soft or hard",
+      "type": "string",
+      "enum": ["soft", "hard", ""],
+      "default": "soft"
+    },
+    "nodeAffinityPreset": {
+      "type": "object",
+      "required": ["type", "key", "values"],
+      "default": {
+        "type": "soft",
+        "key": "\"\"",
+        "values": ["\"\""]
+      },
+      "properties": {
+        "type": {
+          "description": "Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`",
+          "enum": ["soft", "hard", ""],
+          "default": "\"\"",
+          "type": "string"
+        },
+        "key": {
+          "description": "Node label key to match Ignored if `affinity` is set",
+          "type": "string",
+          "default": "\"\""
+        },
+        "values": {
+          "description": "Node label values to match. Ignored if `affinity` is set.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "affinity": {
+      "description": "Affinity for pod assignment. Note: all of podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored if set.",
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/affinity",
+      "default": {}
+    },
+    "nodeSelector": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/nodeSelector",
+      "default": {}
+    },
+    "tolerations": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/tolerations",
+      "default": []
+    },
+    "topologySpreadConstraints": {
+      "anyOf": [
+        {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/topologySpreadConstraints"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "additionalItems": false,
+          "description": "Should be an array. This is just a workaround for an incorrect type from helmet's default values",
+          "properties": {}
+        }
+      ],
+      "default": []
+    },
+    "priorityClassName": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/priorityClassName",
+      "default": "\"\""
+    },
+    "schedulerName": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/schedulerName",
+      "default": "\"\""
+    },
+    "terminationGracePeriodSeconds": {
+      "anyOf": [
+        {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/terminationGracePeriodSeconds"
+        },
+        {
+          "type": "string",
+          "enum": [""],
+          "description": "Should be an integer. This is just a workaround for an incorrect type from helmet's default values"
+        }
+      ],
+      "default": 30
+    },
+    "updateStrategy": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.apps.v1.DeploymentStrategy",
+      "default": {
+        "type": "RollingUpdate"
+      }
+    },
+    "extraVolumes": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.PodSpec/properties/volumes",
+      "description": "Optionally specify extra list of additional volumes for the APP pod(s)"
+    },
+    "extraVolumeMounts": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container/properties/volumeMounts",
+      "description": "Optionally specify extra list of additional volumeMounts for the APP container(s)"
+    },
+    "sidecars": {
+      "type": "array",
+      "default": [],
+      "description": "Add additional sidecar containers to the APP pod(s)",
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container"
+      }
+    },
+    "initContainers": {
+      "type": "array",
+      "default": [],
+      "description": "Add additional init containers to the APP pod(s)",
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container"
+      }
+    },
+    "command": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container/properties/command",
+      "description": "Override main container's command",
+      "default": []
+    },
+    "args": {
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container/properties/args",
+      "description": "Override main container's args",
+      "default": []
+    },
+    "envVars": {
+      "description": "Environment variables to be set on APP container",
+      "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Container/properties/env"
+    },
+    "envVarsConfigMap": {
+      "description": "Name of ConfigMap with environment variables",
+      "type": "string",
+      "default": "\"\""
+    },
+    "envVarsSecret": {
+      "description": "Name of Secret with environment variables",
+      "type": "string",
+      "default": "\"\""
+    },
+    "autoscaling": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable APP deployment autoscaling (Deploy a HorizontalPodAutoscaler object for the APP deployment)"
+        },
+        "minReplicas": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.autoscaling.v2.HorizontalPodAutoscalerSpec/properties/minReplicas"
+        },
+        "maxReplicas": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.autoscaling.v2.HorizontalPodAutoscalerSpec/properties/maxReplicas"
+        },
+        "targetCPU": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.autoscaling.v2.MetricTarget/properties/averageUtilization"
+        },
+        "targetMemory": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.autoscaling.v2.MetricTarget/properties/averageUtilization"
+        },
+        "metrics": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.autoscaling.v2.HorizontalPodAutoscalerSpec/properties/metrics"
+        }
+      }
+    },
+    "configMap": {
+      "type": "object",
+      "properties": {
+        "mounted": {
+          "type": "boolean",
+          "default": false,
+          "description": "Mount the ConfigMap in the main container"
+        },
+        "mountPath": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.VolumeMount/properties/mountPath",
+          "default": "/app/config"
+        },
+        "subPath": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.VolumeMount/properties/subPath",
+          "default": "\"\""
+        },
+        "data": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ConfigMap/properties/data",
+          "default": {}
+        },
+        "labels": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels"
+        },
+        "annotations": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations"
+        }
+      }
+    },
+    "secret": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "anyOf": [
+            {
+              "enum": [
+                "Opaque",
+                "kubernetes.io/service-account-token",
+                "kubernetes.io/dockercfg",
+                "kubernetes.io/dockerconfigjson",
+                "kubernetes.io/basic-auth",
+                "kubernetes.io/ssh-auth",
+                "kubernetes.io/tls"
+              ]
+            },
+            {
+              "pattern": ".+"
+            }
+          ],
+          "default": "Opaque"
+        },
+        "data": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Secret/properties/data",
+          "default": {}
+        },
+        "stringData": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.Secret/properties/stringData",
+          "default": {}
+        },
+        "labels": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels",
+          "default": {}
+        },
+        "annotations": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations",
+          "default": {}
+        }
+      }
+    },
+    "ingress": {
+      "default": {
+        "enabled": false
+      },
+      "allOf": [
+        {
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable ingress resource for the APP"
+            }
+          }
+        },
+        {
+          "properties": {
+            "apiVersion": {
+              "description": "Override API Version (automatically detected if not set)",
+              "type": "string",
+              "enum": [
+                "extensions/v1beta1",
+                "networking.k8s.io/v1beta1",
+                "networking.k8s.io/v1",
+                ""
+              ],
+              "default": ""
+            },
+            "path": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.HTTPIngressPath/properties/path",
+              "default": "/"
+            },
+            "pathType": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.HTTPIngressPath/properties/pathType",
+              "enum": ["ImplementationSpecific", "Prefix", "Exact"]
+            },
+            "hostname": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.IngressRule/properties/host",
+              "default": "app.local"
+            },
+            "annotations": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations",
+              "default": {}
+            },
+            "ingressClassName": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.IngressSpec/properties/ingressClassName",
+              "default": "\"\""
+            },
+            "tls": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable TLS configuration for the hostname defined at ingress.hostname parameter"
+            },
+            "extraHosts": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "required": ["name"],
+                "description": "An array with additional hostname(s) to be covered with the ingress record",
+                "properties": {
+                  "name": {
+                    "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.IngressRule/properties/host",
+                    "default": "",
+                    "description": "Additional hostname",
+                    "examples": ["example.local"]
+                  },
+                  "path": {
+                    "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.HTTPIngressPath/properties/path",
+                    "default": "",
+                    "description": "Path for additional hostname",
+                    "examples": ["/app"]
+                  },
+                  "pathType": {
+                    "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.HTTPIngressPath/properties/pathType",
+                    "default": "ImplementationSpecific",
+                    "description": "Path for additional hostname",
+                    "examples": ["/app"]
+                  }
+                }
+              }
+            },
+            "extraPaths": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.HTTPIngressRuleValue/properties/paths",
+              "default": [],
+              "description": "Any additional arbitrary paths that may need to be added to the ingress under the main host"
+            },
+            "selfSigned": {
+              "type": "boolean",
+              "default": false,
+              "description": "Create a TLS secret for this ingress record using self-signed certificates generated by Helm"
+            },
+            "extraTls": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.IngressSpec/properties/tls",
+              "description": "TLS configuration for additional hostname(s) to be covered with this ingress record"
+            },
+            "secrets": {
+              "description": "If you're providing your own certificates, please use this to add the certificates as secrets",
+              "type": "array",
+              "default": [],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "certificate": {
+                    "type": "string",
+                    "default": "\"\"",
+                    "description": "Raw certificate data, will be base64 encoded and wrapped in a secret"
+                  },
+                  "key": {
+                    "type": "string",
+                    "default": "\"\"",
+                    "description": "Raw key data, will be base64 encoded and wrapped in a secret"
+                  }
+                }
+              }
+            },
+            "existingSecret": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.IngressTLS/properties/secretName",
+              "description": "Reference to an existing TLS secret in the same namespace"
+            },
+            "extraRules": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.networking.v1.IngressSpec/properties/rules",
+              "description": "Additional rules to be covered with this ingress record"
+            }
+          }
+        }
+      ]
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/type",
+          "default": "ClusterIP",
+          "enum": ["ExternalName", "ClusterIP", "NodePort", "LoadBalancer"]
+        },
+        "ports": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/ports",
+          "default": [
+            {
+              "name": "http",
+              "protocol": "TCP",
+              "port": 80,
+              "targetPort": "http"
+            }
+          ]
+        },
+        "sessionAffinity": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/sessionAffinity",
+          "enum": ["None", "ClientIP"],
+          "default": "None"
+        },
+        "clusterIP": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/clusterIP",
+          "default": "\"\""
+        },
+        "loadBalancerIP": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/loadBalancerIP",
+          "default": "\"\""
+        },
+        "loadBalancerSourceRanges": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/loadBalancerSourceRanges",
+          "default": []
+        },
+        "externalTrafficPolicy": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceSpec/properties/externalTrafficPolicy",
+          "default": "Cluster",
+          "enum": ["Local", "Cluster"]
+        },
+        "annotations": {
+          "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations",
+          "default": {}
+        }
+      }
+    },
+    "serviceMonitor": {
+      "default": {
+        "enabled": false
+      },
+      "description": "Prometheus ServiceMonitor configuration for the APP, using monitoring.coreos.com/v1:ServiceMonitor",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Enable ingress resource for the APP"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "namespace": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/namespace",
+              "description": "Namespace in which Prometheus is running",
+              "default": ""
+            },
+            "labels": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels",
+              "description": "Additional ServiceMonitor labels (evaluated as a template)",
+              "default": {}
+            },
+            "annotations": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations",
+              "description": "Additional ServiceMonitor annotations (evaluated as a template)",
+              "default": {}
+            },
+            "jobLabel": {
+              "type": "string",
+              "description": "The name of the label on the target service to use as the job name in Prometheus",
+              "default": ""
+            },
+            "honorLabels": {
+              "type": "boolean",
+              "description": "The honorLabels chooses the metric's labels on collisions with target labels",
+              "default": false
+            },
+            "interval": {
+              "type": "string",
+              "description": "How frequently to scrape metrics",
+              "default": ""
+            },
+            "scrapeTimeout": {
+              "type": "string",
+              "description": "Timeout after which the scrape is ended",
+              "default": ""
+            },
+            "metricRelabelings": {
+              "type": "array",
+              "description": "Specify additional relabeling of metrics",
+              "default": [],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "description": "Action to perform based on regex matching. Default is 'replace'. uppercase and lowercase actions require Prometheus >= 2.36."
+                  },
+                  "modulus": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Modulus to take of the hash of the source label values."
+                  },
+                  "regex": {
+                    "type": "string",
+                    "description": "Regular expression against which the extracted value is matched. Default is '(.*)'"
+                  },
+                  "replacement": {
+                    "type": "string",
+                    "description": "Replacement value against which a regex replace is performed if the regular expression matches. Regex capture groups are available. Default is '$1'"
+                  },
+                  "separator": {
+                    "type": "string",
+                    "description": "Separator placed between concatenated source label values. default is ';'."
+                  },
+                  "sourceLabels": {
+                    "type": "array",
+                    "description": "The source labels select values from existing labels. Their content is concatenated using the configured separator and matched against the configured regular expression for the replace, keep, and drop actions.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "targetLabel": {
+                    "type": "string",
+                    "description": "Label to which the resulting value is written in a replace action. It is mandatory for replace actions. Regex capture groups are available."
+                  }
+                }
+              }
+            },
+            "relabelings": {
+              "type": "array",
+              "description": "Specify general relabeling",
+              "default": [],
+              "items": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "description": "Action to perform based on regex matching. Default is 'replace'. uppercase and lowercase actions require Prometheus >= 2.36."
+                  },
+                  "modulus": {
+                    "type": "integer",
+                    "description": "Modulus to take of the hash of the source label values."
+                  },
+                  "regex": {
+                    "type": "string",
+                    "description": "Regular expression against which the extracted value is matched. Default is '(.*)'"
+                  },
+                  "replacement": {
+                    "type": "string",
+                    "description": "Replacement value against which a regex replace is performed if the regular expression matches. Regex capture groups are available. Default is '$1'"
+                  },
+                  "separator": {
+                    "type": "string",
+                    "description": "Separator placed between concatenated source label values. default is ';'."
+                  },
+                  "sourceLabels": {
+                    "type": "array",
+                    "description": "The source labels select values from existing labels. Their content is concatenated using the configured separator and matched against the configured regular expression for the replace, keep, and drop actions.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "targetLabel": {
+                    "type": "string",
+                    "description": "Label to which the resulting value is written in a replace action. It is mandatory for replace actions. Regex capture groups are available."
+                  }
+                }
+              }
+            },
+            "selector": {
+              "description": "Prometheus instance selector labels. {key: value} pairs use the 'In' expression to match values. The requirements are ANDed.",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "default": {},
+              "type": "object"
+            },
+            "namespaceSelector": {
+              "description": "The namespaceSelector is a selector for selecting either all namespaces or a list of namespaces",
+              "default": {},
+              "type": "object",
+              "properties": {
+                "any": {
+                  "type": "boolean",
+                  "description": "Boolean describing whether all namespaces are selected in contrast to a list restricting them."
+                },
+                "matchNames": {
+                  "type": "array",
+                  "description": "List of namespace names to select from.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "port": {
+              "description": "The port used by ServiceMonitor",
+              "default": "http",
+              "type": "string"
+            },
+            "path": {
+              "description": "The path used by ServiceMonitor",
+              "default": "metrics",
+              "type": "string",
+              "examples": ["/metrics"]
+            }
+          }
+        }
+      ]
+    },
+    "serviceAccount": {
+      "type": "object",
+      "default": {
+        "create": false
+      },
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "create": {
+              "description": "Enable creation of ServiceAccount for APP pods",
+              "default": false
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/name",
+              "description": "The name of the ServiceAccount to use",
+              "default": ""
+            },
+            "automountServiceAccountToken": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.api.core.v1.ServiceAccount/properties/automountServiceAccountToken",
+              "description": "Allows auto mount of ServiceAccountToken on the serviceAccount created",
+              "default": true
+            },
+            "annotations": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/annotations",
+              "description": "Additional custom annotations for the ServiceAccount",
+              "default": {}
+            },
+            "labels": {
+              "$ref": "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master/_definitions.json#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta/properties/labels",
+              "description": "Additional custom labels for the ServiceAccount",
+              "default": {}
+            }
+          }
+        }
+      ]
+    }
+  }
+}
