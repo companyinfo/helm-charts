@@ -1,0 +1,43 @@
+# Use with an application chart that imports Helmet defaults and includes helmet.app.
+# The infrastructure must provide shared-gateway and its HTTPS listener in infrastructure.
+image:
+  repository: nginx
+ports:
+  - name: http
+    containerPort: 80
+    protocol: TCP
+route:
+  main:
+    enabled: true # Optional; defaults to true when omitted.
+    kind: HTTPRoute
+    parentRefs:
+      - name: shared-gateway
+        namespace: infrastructure
+        sectionName: https
+    hostnames:
+      - app.example.com
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - identifier: app
+            port: http
+  # A configured Route can be kept disabled until needed in an environment.
+  # Set enabled: true to emit it; the infrastructure must provide an HTTP listener.
+  redirect:
+    enabled: false
+    kind: HTTPRoute
+    parentRefs:
+      - name: shared-gateway
+        namespace: infrastructure
+        sectionName: http
+    hostnames:
+      - app.example.com
+    rules:
+      - filters:
+          - type: RequestRedirect
+            requestRedirect:
+              scheme: https
+              statusCode: 301

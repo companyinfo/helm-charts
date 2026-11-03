@@ -71,6 +71,282 @@ ingress:
 $ helm install nginx .
 ```
 
+## Gateway API
+
+`helmet.app` includes `helmet.gateway` automatically. Routes default
+to empty, so existing deployments are unchanged. You can also include
+`{{ include "helmet.gateway" . }}` directly when composing individual templates.
+
+Helmet manages application Routes. Infrastructure configuration owns GatewayClass, Gateway,
+ListenerSet, and ReferenceGrant resources; Helmet does not create them.
+
+Install the [Gateway API CRDs](https://gateway-api.sigs.k8s.io/guides/) and a
+compatible Gateway controller separately. Helmet creates resources, not the CRDs
+or controller. Each resource's features must be supported by your controller.
+The default API version is `gateway.networking.k8s.io/v1`. `HTTPRoute`, `GRPCRoute`
+and `TLSRoute` are served at `v1` from Gateway API 1.5; `TCPRoute` and `UDPRoute`
+only from 1.6. For older installations, set `apiVersion` on each entry to a version
+served by your CRDs, for example `gateway.networking.k8s.io/v1alpha2` for older
+TCPRoute/UDPRoute/TLSRoute.
+
+To attach your application to an existing shared Gateway:
+
+```yaml
+route:
+  main:
+    enabled: true # Optional; defaults to true.
+    kind: HTTPRoute
+    parentRefs:
+      - name: shared-gateway
+        namespace: infrastructure
+        sectionName: https
+    hostnames:
+      - app.example.com
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - identifier: app
+            port: http
+```
+
+`route` is a map keyed by a meaningful identifier such as `main`, `api`, or
+`redirect`. Each entry supports `enabled`, which defaults to `true` when omitted.
+Set `enabled: false` to omit that Route's Kubernetes resource. This applies to all
+supported Route kinds, independently of other entries. For example, keep `main`
+enabled while disabling a configured redirect in an environment override:
+
+```yaml
+route:
+  main:
+    enabled: true
+  redirect:
+    enabled: false
+```
+
+This override assumes the full route definitions are supplied by your base values.
+Setting a previously deployed Route to `enabled: false` removes it from the Helm
+release on upgrade. Companion resources in `extraObjects` are configured separately;
+disabling a Route does not disable its policies or filters automatically.
+
+The default kind is `HTTPRoute`; supported kinds are `HTTPRoute`, `GRPCRoute`,
+`TLSRoute`, `TCPRoute`, and `UDPRoute`.
+
+Resource names default to `<application-fullname>-<route-key>`. The route key is
+truncated so the result stays within 63 characters, keeping the application prefix
+intact; keys must be non-empty. Set `name` to override this and avoid truncation.
+Entries also accept `namespace` (defaults to Helmet's namespace), `apiVersion`,
+`labels`, and `annotations`. All remaining fields become the native Route spec,
+including `parentRefs`, `hostnames`, and `rules`. Route values support templates
+evaluated in the consuming chart's context. Resource metadata merges with
+`commonLabels` and `commonAnnotations`, with resource values taking precedence.
+Keep route keys and names stable across upgrades.
+
+### Application Service references
+
+Helmet creates one application Service, identified by `app`. In
+`rules[].backendRefs`, use `identifier: app` to resolve its generated name and
+Service port. `port` accepts a name from `service.ports`, a numeric Service port,
+or a template resolving to either. If the Service has one port, `port` can be
+omitted; with multiple ports it is required. This uses Service ports rather than
+container ports or `targetPort`.
+
+For example, `identifier: app` with `port: http` renders as:
+
+```yaml
+backendRefs:
+  - name: my-release-my-app
+    port: 80
+```
+
+The identifier cannot be combined with a backend name, namespace, non-Service
+kind, or non-core group. Missing Services, unknown identifiers, and unknown ports
+produce rendering errors. If the Route is deployed in another namespace, Helmet
+sets the backend namespace to the application's Service namespace. The Service
+owner must provision any required ReferenceGrant separately.
+
+Explicit native backend references remain available:
+
+```yaml
+backendRefs:
+  - identifier: app
+    port: http
+    weight: 90
+  - name: canary
+    port: 8080
+    weight: 10
+```
+
+Explicit references use numeric Service ports and can include native `group`,
+`kind`, `namespace`, and filters. The `identifier` shorthand applies only to
+`rules[].backendRefs`; other references, such as request-mirror backends, use
+native Kubernetes syntax. There is no implicit backend or rule: configure
+`backendRefs` explicitly, or use filters for a redirect-only rule. Native fields
+support path/header/method matches, traffic weights, redirects, rewrites, and
+controller-supported timeouts.
+
+See [the HTTPRoute example](examples/gateway/values.yaml) for an application
+using a shared Gateway. The infrastructure manages the Gateway's HTTPS listener and
+certificate. TLS settings on `ingress` apply only to Ingress.
+
+For cross-namespace Route attachment, the Gateway listener's `allowedRoutes` must
+permit the Route namespace. Cross-namespace backend or certificate references
+require a ReferenceGrant in the **target** namespace, managed by that resource's
+owner outside Helmet. A client application must not grant itself access to another
+application's resources. Attaching a Route to a Gateway in another namespace uses
+`allowedRoutes`, not a ReferenceGrant.
+
+Ingress and Routes can coexist during migration; enable them independently.
+
+## Extra objects and controller extensions
+
+`extraObjects` renders additional Kubernetes manifests without coupling Helmet
+to a controller or CRD schema. It accepts a list or map of complete objects or
+YAML strings; map keys only identify entries and are not added to the manifests.
+All entries are evaluated as Helm templates in the consuming application's context.
+`helmet.app` includes them automatically, or you can include
+`{{ include "helmet.extraObjects" . }}` directly.
+
+For example, with NGINX Gateway Fabric and its RateLimitPolicy CRD installed,
+attach a local rate limit to `route.main`:
+
+```yaml
+extraObjects:
+  - apiVersion: gateway.nginx.org/v1alpha1
+    kind: RateLimitPolicy
+    metadata:
+      name: '{{ include "common.names.fullname" . }}-rate-limit'
+      namespace: '{{ include "common.names.namespace" . }}'
+    spec:
+      targetRefs:
+        - group: gateway.networking.k8s.io
+          kind: HTTPRoute
+          name: '{{ include "common.names.fullname" . }}-main'
+      rateLimit:
+        local:
+          rules:
+            - key: $binary_remote_addr
+              zoneSize: 10m
+              rate: 10r/s
+```
+
+Match `targetRefs[].name` and the policy namespace to your Route, including any
+explicit name or namespace overrides. This example assumes the default generated
+name is shorter than 63 characters; otherwise use the Route's truncated name or an
+explicit Route name. These settings are interpreted by NGINX Gateway Fabric, not
+by Helmet. Other controllers can use their own policy resources through the same
+`extraObjects` field. See the
+[NGINX RateLimitPolicy documentation](https://docs.nginx.com/nginx-gateway-fabric/traffic-management/rate-limit/)
+for version requirements and behavior.
+
+For filter-based extensions, supply the companion custom resource through
+`extraObjects` and reference its name from the Route's native filter:
+
+```yaml
+# Within route.main.rules[]:
+filters:
+  - type: ExtensionRef
+    extensionRef:
+      group: gateway.nginx.org
+      kind: SnippetsFilter
+      name: app-cache
+```
+
+The example filter requires a separately defined `SnippetsFilter` named `app-cache`
+in the Route namespace and snippet support enabled in the controller. Helmet passes
+the filter through unchanged. Infrastructure configuration owns controller enablement,
+shared cache storage and zones, and Gateway-wide policies.
+
+Supply all required metadata yourself; Helmet does not inject names, namespaces,
+common labels, or annotations into extra objects. The library does not install
+CRDs or validate controller-specific specs. Extra objects are part of the Helm
+release and follow its normal upgrade and uninstall lifecycle.
+
+### More extra object examples
+
+Choose the examples matching your installed controller. When combining examples,
+put their entries in a single `extraObjects` list.
+
+Envoy Gateway: local rate limit targeting route.main.
+
+```yaml
+extraObjects:
+  - apiVersion: gateway.envoyproxy.io/v1alpha1
+    kind: BackendTrafficPolicy
+    metadata:
+      name: '{{ include "common.names.fullname" . }}-envoy-rate-limit'
+      namespace: '{{ include "common.names.namespace" . }}'
+    spec:
+      targetRefs:
+        - group: gateway.networking.k8s.io
+          kind: HTTPRoute
+          name: '{{ include "common.names.fullname" . }}-main'
+      rateLimit:
+        local:
+          rules:
+            - limit:
+                requests: 10
+                unit: Second
+```
+
+Requires Envoy Gateway and its BackendTrafficPolicy CRD. This limit is local
+to each Envoy instance, rather than a shared quota across replicas. As in the NGINX
+example, match the target name and namespace to your Route overrides. See
+[Envoy Gateway local rate limiting](https://gateway.envoyproxy.io/latest/tasks/traffic/local-rate-limit/).
+
+Traefik: Middleware referenced by an HTTPRoute ExtensionRef filter.
+
+```yaml
+extraObjects:
+  - apiVersion: traefik.io/v1alpha1
+    kind: Middleware
+    metadata:
+      name: '{{ include "common.names.fullname" . }}-prefix'
+      namespace: '{{ include "common.names.namespace" . }}'
+    spec:
+      addPrefix:
+        prefix: /api
+```
+
+Creating a Middleware does not attach it automatically. Add this filter to the
+application Route rule in the same namespace:
+
+```yaml
+# Add to the appropriate rule under route.main.rules:
+filters:
+  - type: ExtensionRef
+    extensionRef:
+      group: traefik.io
+      kind: Middleware
+      name: '{{ include "common.names.fullname" . }}-prefix'
+```
+
+Traefik must have both its Gateway and Kubernetes CRD providers enabled, with
+the Middleware CRD installed. See
+[Traefik Gateway API middleware filters](https://doc.traefik.io/traefik/reference/routing-configuration/kubernetes/gateway-api/).
+
+Standard Kubernetes ConfigMap supplied as a YAML string (no extra CRDs).
+
+```yaml
+extraObjects:
+  - |
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: '{{ include "common.names.fullname" . }}-settings'
+      namespace: '{{ include "common.names.namespace" . }}'
+    data:
+      settings.yaml: |
+        logLevel: info
+        featureEnabled: true
+```
+
+This demonstrates a multiline YAML string and Helm template evaluation. Mount
+or reference the ConfigMap explicitly in your application when needed; rendering
+an extra object does not automatically wire it into the Deployment.
+
 ## Parameters
 
 ### Global parameters
@@ -93,6 +369,7 @@ $ helm install nginx .
 | `clusterDomain`     | Kubernetes Cluster Domain name                                                                             | `"cluster.local"` |
 | `commonLabels`      | Labels to be added to all deployed resources                                                               | `{}`              |
 | `commonAnnotations` | Annotations to be added to all deployed resources                                                          | `{}`              |
+| `extraObjects`      | Additional Kubernetes manifests, evaluated as Helm templates.                                              | `[]`              |
 
 
 ### Image parameters
@@ -208,6 +485,13 @@ $ helm install nginx .
 | `ingress.secrets`          | If you're providing your own certificates, please use this to add the certificates as secrets | `[]`                     |
 | `ingress.existingSecret`   | It is you own the certificate as secret                                                       | `""`                     |
 | `ingress.extraRules`       | Additional rules to be covered with this ingress record                                       | `[]`                     |
+
+
+### Gateway API parameters
+
+| Name    | Description                                                                             | Value |
+|---------|-----------------------------------------------------------------------------------------|-------|
+| `route` | Named application routes; kind defaults to HTTPRoute and entries are enabled by default | `{}`  |
 
 
 ### Traffic Exposure (Service) parameters

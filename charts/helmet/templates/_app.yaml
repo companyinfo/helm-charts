@@ -11,6 +11,7 @@
 
 {{ include "helmet.hpa" . }}
 {{ include "helmet.ingress" . }}
+{{ include "helmet.gateway" . }}
 
 {{- if or .Values.secret.data .Values.secret.stringData }}
 {{ include "helmet.secret" . }}
@@ -27,4 +28,5 @@
 {{ include "helmet.servicemonitor" . }}
 {{ include "helmet.cronjob" . }}
 {{ include "helmet.podmonitor" . }}
+{{ include "helmet.extraObjects" . }}
 {{- end }}

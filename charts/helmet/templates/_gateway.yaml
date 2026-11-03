@@ -1,0 +1,109 @@
+{{/* Resolve the application Service backend without leaking chart-only fields. */}}
+{{- define "helmet.route.backend" -}}
+{{- $backend := deepCopy .backend -}}
+{{- $context := .context -}}
+{{- if hasKey $backend "identifier" -}}
+  {{- if ne $backend.identifier "app" -}}
+    {{- fail (printf "route.%s: unknown Service identifier %q; Helmet provides only app" .route $backend.identifier) -}}
+  {{- end -}}
+  {{- if or (hasKey $backend "name") (hasKey $backend "namespace") (and (hasKey $backend "kind") (ne $backend.kind "Service")) (and (hasKey $backend "group") (ne $backend.group "")) -}}
+    {{- fail (printf "route.%s: identifier app cannot override backend name, namespace, group or kind" .route) -}}
+  {{- end -}}
+  {{- $ports := $context.Values.service.ports | default list -}}
+  {{- if or (not $ports) (not $context.Values.ports) -}}
+    {{- fail (printf "route.%s: identifier app requires the application Service" .route) -}}
+  {{- end -}}
+  {{- $port := get $backend "port" -}}
+  {{- if not (hasKey $backend "port") -}}
+    {{- if ne (len $ports) 1 -}}
+      {{- fail (printf "route.%s: specify a backend port when the application Service has multiple ports" .route) -}}
+    {{- end -}}
+    {{- $port = (first $ports).port -}}
+  {{- end -}}
+  {{- $resolved := 0 -}}
+  {{- range $servicePort := $ports -}}
+    {{- if or (eq (toString $port) (toString $servicePort.port)) (eq (toString $port) (default "" $servicePort.name)) -}}
+      {{- $resolved = int $servicePort.port -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if not $resolved -}}
+    {{- fail (printf "route.%s: backend port %q is not defined in service.ports" .route (toString $port)) -}}
+  {{- end -}}
+  {{- $_ := unset $backend "identifier" -}}
+  {{- $_ := set $backend "name" (include "common.names.fullname" $context) -}}
+  {{- $_ := set $backend "port" $resolved -}}
+  {{- $namespace := include "common.names.namespace" $context -}}
+  {{- if ne .namespace $namespace -}}
+    {{- $_ := set $backend "namespace" $namespace -}}
+  {{- end -}}
+{{- end -}}
+{{- toYaml $backend -}}
+{{- end -}}
+
+{{/* Shared metadata and native spec renderer for application Gateway API resources. */}}
+{{- define "helmet.gateway.resource" -}}
+{{- $context := .context -}}
+{{- $resource := .resource -}}
+{{- $labels := include "common.tplvalues.merge" (dict "values" (list ($resource.labels | default dict) $context.Values.commonLabels) "context" $context) | fromYaml -}}
+{{- $annotations := include "common.tplvalues.merge" (dict "values" (list ($resource.annotations | default dict) $context.Values.commonAnnotations) "context" $context) | fromYaml }}
+---
+apiVersion: {{ default "gateway.networking.k8s.io/v1" $resource.apiVersion | quote }}
+kind: {{ .kind }}
+metadata:
+  name: {{ .name | quote }}
+  namespace: {{ .namespace | quote }}
+  labels: {{- include "common.labels.standard" (dict "customLabels" $labels "context" $context) | nindent 4 }}
+  {{- if $annotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" $annotations "context" $context) | nindent 4 }}
+  {{- end }}
+spec: {{- toYaml .spec | nindent 2 }}
+{{ end -}}
+
+{{/* Named application Routes for existing Gateways. */}}
+{{- define "helmet.gateway" -}}
+{{- $context := . -}}
+{{- $route := .Values.route | default dict -}}
+{{- if not (kindIs "map" $route) -}}
+  {{- fail (printf "route must be a map keyed by route identifier; got %s" (kindOf $route)) -}}
+{{- end -}}
+{{- range $id, $raw := $route -}}
+{{- if not (kindIs "map" $raw) -}}
+  {{- fail (printf "route.%v must be a map; got %s" $id (kindOf $raw)) -}}
+{{- end -}}
+{{- if eq (toString $id) "" -}}
+  {{- fail "route keys must be non-empty identifiers" -}}
+{{- end -}}
+{{- $enabled := true -}}
+{{- if hasKey $raw "enabled" -}}
+  {{- $enabled = ne (toString $raw.enabled) "false" -}}
+{{- end -}}
+{{- if $enabled -}}
+{{- $resource := include "common.tplvalues.render" (dict "value" $raw "context" $context) | fromYaml -}}
+{{- $kind := default "HTTPRoute" $resource.kind -}}
+{{- if not (has $kind (list "HTTPRoute" "GRPCRoute" "TCPRoute" "UDPRoute" "TLSRoute")) -}}
+  {{- fail (printf "route.%s: unsupported kind %q" $id $kind) -}}
+{{- end -}}
+{{- $prefix := printf "%s-" (include "common.names.fullname" $context | trunc 62 | trimSuffix "-") -}}
+{{- $room := int (sub 63 (len $prefix)) -}}
+{{- if le $room 0 -}}
+  {{- fail (printf "route.%v: application name %q leaves no room for a route suffix; set name explicitly" $id (include "common.names.fullname" $context)) -}}
+{{- end -}}
+{{- $name := default (printf "%s%s" $prefix (trunc $room $id | trimSuffix "-")) $resource.name -}}
+{{- $namespace := default (include "common.names.namespace" $context) $resource.namespace -}}
+{{- $spec := omit $resource "enabled" "name" "namespace" "apiVersion" "kind" "labels" "annotations" -}}
+{{- if eq (len $spec) 0 -}}
+  {{- fail (printf "route.%s requires a non-empty route spec" $id) -}}
+{{- end -}}
+{{- range $rule := ($spec.rules | default list) -}}
+  {{- if hasKey $rule "backendRefs" -}}
+    {{- $backends := list -}}
+    {{- range $backend := $rule.backendRefs -}}
+      {{- $backends = append $backends (include "helmet.route.backend" (dict "backend" $backend "context" $context "route" $id "namespace" $namespace) | fromYaml) -}}
+    {{- end -}}
+    {{- $_ := set $rule "backendRefs" $backends -}}
+  {{- end -}}
+{{- end -}}
+{{ include "helmet.gateway.resource" (dict "context" $context "resource" $resource "kind" $kind "name" $name "namespace" $namespace "spec" (required (printf "route.%s requires a non-empty route spec" $id) $spec)) }}
+{{- end -}}
+{{- end -}}
+{{- end -}}

@@ -1,0 +1,22 @@
+{{/*
+Render arbitrary companion manifests in the consuming chart's context.
+Entries can be objects or YAML strings. Metadata and specs are supplied as-is.
+Usage: {{ include "helmet.extraObjects" . }}
+*/}}
+{{- define "helmet.extraObjects" -}}
+{{- $context := . -}}
+{{- $objects := .Values.extraObjects | default list -}}
+{{- if not (or (kindIs "slice" $objects) (kindIs "map" $objects)) -}}
+  {{- fail "extraObjects must be a list or map of Kubernetes objects or YAML strings" -}}
+{{- end -}}
+{{- range $key, $object := $objects -}}
+{{- if not (or (kindIs "map" $object) (kindIs "string" $object)) -}}
+  {{- fail (printf "extraObjects[%v] must be a Kubernetes object or YAML string" $key) -}}
+{{- end -}}
+{{- $manifest := include "common.tplvalues.render" (dict "value" $object "context" $context) | trim -}}
+{{- if $manifest }}
+---
+{{ $manifest }}
+{{ end -}}
+{{- end -}}
+{{- end -}}

@@ -68,6 +68,85 @@ exports:
     ##
     commonAnnotations: {}
 
+    ## @param extraObjects Additional Kubernetes manifests, evaluated as Helm templates.
+    ## Accepts a list or map of objects or YAML strings; map keys are identifiers only.
+    ## Supply complete manifests, including metadata. No metadata is added or merged.
+    ## Install any required controller and CRDs separately.
+    ## Example 1: application policy for NGINX Gateway Fabric, targeting route.main.
+    ## extraObjects:
+    ##   - apiVersion: gateway.nginx.org/v1alpha1
+    ##     kind: RateLimitPolicy
+    ##     metadata:
+    ##       name: '{{ include "common.names.fullname" . }}-rate-limit'
+    ##       namespace: '{{ include "common.names.namespace" . }}'
+    ##     spec:
+    ##       targetRefs:
+    ##         - group: gateway.networking.k8s.io
+    ##           kind: HTTPRoute
+    ##           name: '{{ include "common.names.fullname" . }}-main'
+    ##       rateLimit:
+    ##         local:
+    ##           rules:
+    ##             - key: $binary_remote_addr
+    ##               zoneSize: 10m
+    ##               rate: 10r/s
+    ##
+    ## Example 2: Envoy Gateway: local rate limit targeting route.main.
+    ## Requires Envoy Gateway and its BackendTrafficPolicy CRD.
+    ## extraObjects:
+    ##   - apiVersion: gateway.envoyproxy.io/v1alpha1
+    ##     kind: BackendTrafficPolicy
+    ##     metadata:
+    ##       name: '{{ include "common.names.fullname" . }}-envoy-rate-limit'
+    ##       namespace: '{{ include "common.names.namespace" . }}'
+    ##     spec:
+    ##       targetRefs:
+    ##         - group: gateway.networking.k8s.io
+    ##           kind: HTTPRoute
+    ##           name: '{{ include "common.names.fullname" . }}-main'
+    ##       rateLimit:
+    ##         local:
+    ##           rules:
+    ##             - limit:
+    ##                 requests: 10
+    ##                 unit: Second
+    ##
+    ## Example 3: Traefik: Middleware referenced by an HTTPRoute ExtensionRef filter.
+    ## Requires Traefik Gateway and Kubernetes CRD providers and Middleware CRD.
+    ## extraObjects:
+    ##   - apiVersion: traefik.io/v1alpha1
+    ##     kind: Middleware
+    ##     metadata:
+    ##       name: '{{ include "common.names.fullname" . }}-prefix'
+    ##       namespace: '{{ include "common.names.namespace" . }}'
+    ##     spec:
+    ##       addPrefix:
+    ##         prefix: /api
+    ##
+    ## # Add to the appropriate rule under route.main.rules:
+    ## filters:
+    ##   - type: ExtensionRef
+    ##     extensionRef:
+    ##       group: traefik.io
+    ##       kind: Middleware
+    ##       name: '{{ include "common.names.fullname" . }}-prefix'
+    ##
+    ## Example 4: Standard Kubernetes ConfigMap supplied as a YAML string (no extra CRDs).
+    ## extraObjects:
+    ##   - |
+    ##     apiVersion: v1
+    ##     kind: ConfigMap
+    ##     metadata:
+    ##       name: '{{ include "common.names.fullname" . }}-settings'
+    ##       namespace: '{{ include "common.names.namespace" . }}'
+    ##     data:
+    ##       settings.yaml: |
+    ##         logLevel: info
+    ##         featureEnabled: true
+    ##
+    ## Choose examples for your controller. Combine entries under one extraObjects list.
+    extraObjects: []
+
     ## @section Helmet parameters
 
     ## Helmet (App) image version
@@ -618,6 +697,56 @@ exports:
       ##             name: http
       ##
       extraRules: []
+
+    ## @section Gateway API parameters
+    ## Infrastructure configuration manages Gateway API CRDs, controllers, Gateways,
+    ## GatewayClasses, ListenerSets and ReferenceGrants separately.
+    ## @param route Named application routes; kind defaults to HTTPRoute and entries are enabled by default
+    ## Set enabled: false on an entry to omit its resource. This flag applies to every
+    ## supported Route kind. Native spec fields go directly under each entry, alongside
+    ## optional name, namespace, apiVersion and metadata.
+    ## Use backendRefs[].identifier: app to target Helmet's Service and resolve a
+    ## named Service port, e.g. port: http. Explicit native backends are supported.
+    ## Example 1: HTTP traffic from an existing shared Gateway to this app.
+    ## route:
+    ##   main:
+    ##     enabled: true # Optional; routes are enabled by default.
+    ##     kind: HTTPRoute
+    ##     parentRefs:
+    ##       - name: shared-gateway
+    ##         namespace: infrastructure
+    ##         sectionName: https
+    ##     hostnames:
+    ##       - app.example.com
+    ##     rules:
+    ##       - matches:
+    ##           - path:
+    ##               type: PathPrefix
+    ##               value: /
+    ##         backendRefs:
+    ##           - identifier: app
+    ##             port: http
+    ##
+    ## Example 2: Redirect HTTP requests to HTTPS (no backend required).
+    ## route:
+    ##   redirect:
+    ##     enabled: false # Set true to create this redirect Route.
+    ##     kind: HTTPRoute
+    ##     parentRefs:
+    ##       - name: shared-gateway
+    ##         namespace: infrastructure
+    ##         sectionName: http
+    ##     hostnames:
+    ##       - app.example.com
+    ##     rules:
+    ##       - filters:
+    ##           - type: RequestRedirect
+    ##             requestRedirect:
+    ##               scheme: https
+    ##               statusCode: 301
+    ##
+    ## To use both examples, put main and redirect under the same route map.
+    route: {}
 
     ## Enable persistence using Persistent Volume Claims
     ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
